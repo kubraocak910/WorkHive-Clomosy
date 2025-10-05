@@ -1,0 +1,176 @@
+uses uAddComponent;
+
+var 
+SingupPage : TclForm ;
+slabelSingup ,slabelWelcome ,slabelMail,slabelPassword,slabelRol,slabelFirma: TClProLabel;
+seditMail , seditPasswords,seditRol,seditFirma: TclProEdit ;
+sbuttonSingup : TClProButton;
+simagelogo: TClProImage;
+sInsertQ: TClSqlQuery;
+
+// fonksiyon tanımlamaları
+/*void singupmember
+{
+  sInsertQ=TClSqlQuery.Create(nil);
+  Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+  
+  {
+  try
+  
+   sInsertQ.Connection=Clomosy.DBSQLServerConnection;
+   sInsertQ.Sql.Text = 'SELECT * FROM kullanicilar WHERE 1=0';
+   sInsertQ.Open;
+   sInsertQ.Edit;
+   sInsertQ.FieldByName('Eposta').AsString=seditMail.Text;
+   sInsertQ.FieldByName('SifreHash').AsString=seditPasswords.Text;
+   sInsertQ.FieldByName('Ad').AsString=seditRol.Text;
+   sInsertQ.FieldByName('Soyad').AsString=seditFirma.Text;
+   sInsertQ.FieldByName('Rol').AsString='employee';
+   sInsertQ.Post;
+   ShowMessage('Veri ekleme başarılı');
+   
+  
+  finally
+  
+    sInsertQ.Close;
+    sInsertQ.Free;}}
+}*/
+
+// =================================================================
+// YENİ VE DAHA SADE 'singupmember' FONKSİYONU
+// CalisanPerformans tablosu ile entegrasyonu içerir.
+// =================================================================
+void singupmember
+var
+  yeniKullaniciID: Integer;
+{
+  sInsertQ = TClSqlQuery.Create(nil);
+  
+  try
+  {
+    
+    Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+    sInsertQ.Connection = Clomosy.DBSQLServerConnection;
+   
+  
+    sInsertQ.Sql.Text = 'SELECT * FROM kullanicilar WHERE 1=0';
+    sInsertQ.Open;
+    sInsertQ.Append; 
+    
+    sInsertQ.FieldByName('Eposta').AsString = seditMail.Text;
+    sInsertQ.FieldByName('SifreHash').AsString = seditPasswords.Text;
+    sInsertQ.FieldByName('Ad').AsString = seditRol.Text;
+    sInsertQ.FieldByName('Soyad').AsString = seditFirma.Text;
+    sInsertQ.FieldByName('Rol').AsString = 'employee'; // Rolü 'Calisan' olarak sabitliyoruz.
+    
+    sInsertQ.Post;
+    
+    
+    
+    yeniKullaniciID = sInsertQ.FieldByName('KullaniciID').AsInteger;
+    
+  
+    if (yeniKullaniciID > 0)
+    {
+    
+      sInsertQ.Close; 
+      
+      
+      sInsertQ.Sql.Text = 'SELECT * FROM CalisanPerformans WHERE 1=0';
+      sInsertQ.Open;
+      sInsertQ.Append;
+      
+      
+      sInsertQ.FieldByName('CalisanID').AsInteger = yeniKullaniciID;
+      sInsertQ.FieldByName('Maas').AsString = '0';
+      sInsertQ.FieldByName('ZamTarihi').AsString = 'today'
+      sInsertQ.FieldByName('calisanRolü').AsString = 'Veri Analisti';
+      
+      sInsertQ.Post;
+    }
+    
+    ShowMessage('Yeni çalışan kaydı başarıyla oluşturuldu!');
+  }
+  finally
+  {
+    
+    sInsertQ.Close;
+    sInsertQ.Free;
+  }}
+}
+// Main Kod
+{ 
+
+  // LOGİN SAYFASI OLUŞTURMA VE ARKA PLAN TASARIMI
+    SingupPage =TclForm.Create(self);
+    SingupPage.SetFormColor('#f8edd9','',clGNone);
+    SingupPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+    
+  // HOŞGELDİNİZ YAZISI
+    slabelWelcome=SingupPage.AddNewProLabel(SingupPage, 'slabelWelcome', 'Hoşgeldiniz');
+    slabelWelcome.align=alTop;
+    slabelWelcome.margins.left=20;
+    slabelWelcome.margins.top=38;
+    slabelWelcome.width=200;
+    slabelWelcome.height=60;
+    slabelWelcome.clProSettings.FontHorzAlign = palLeading;
+    slabelWelcome.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+    slabelWelcome.clProSettings.FontSize=40;
+    slabelWelcome.clProSettings.TextSettings.Font.Style=[fsBold]
+    slabelWelcome.SetclProSettings(slabelWelcome.clProSettings);
+  
+  // BİLEŞENLERİN BAĞLI OLDUĞU  LABEL 
+    slabelSingup=SingupPage.AddNewProLabel(SingupPage, 'slabelSingup',' ');
+    slabelSingup.width=200;
+    slabelSingup.height=600;
+    slabelSingup.margins.left =100;
+    slabelSingup.margins.right=100;
+    slabelSingup.align=alCenter;
+    slabelSingup.align=alVertCenter; // kendim ekleyebilrsem kendim yerini belirleyceğim
+    
+  // LOGO
+    simagelogo=SingupPage.AddNewProImage(slabelSingup, 'simagelogo');
+    simagelogo.height=200;// şekil dikdörgen olduğu için bir anlamı olmamış diye düşündğm
+    simagelogo.width=200;
+    simagelogo.align =alMostTop;
+    simagelogo.margins.bottom = 0;
+    simagelogo.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/13/XQeOJ6.png';
+    simagelogo.SetclProSettings(simagelogo.clProSettings);
+    
+  // KULLANICI ŞİFRE FİRMA ROL GİRİŞİ 
+  
+    slabelRol=uAddComponent.AddLeftSmallText(SingupPage,slabelSingup,'slabelRol','Ad');
+    seditRol=uAddComponent.AddProEdit(SingupPage,slabelSingup , 'seditAd', 'Ad');
+    
+    slabelFirma=uAddComponent.AddLeftSmallText(SingupPage,slabelSingup,'slabelFirma','Soyad');
+    seditFirma=uAddComponent.AddProEdit(SingupPage, slabelSingup , 'seditFirma', 'Soyad');
+    
+    slabelMail=uAddComponent.AddLeftSmallText(SingupPage,slabelSingup,'slabelMail','Mail Adresi');
+    seditMail=uAddComponent.AddProEdit(SingupPage,slabelSingup , 'seditMail', 'Mail Adresi');
+    
+    slabelPassword=uAddComponent.AddLeftSmallText(SingupPage,slabelSingup,'slabelPassword','Şifre');
+    seditPasswords=uAddComponent.AddProEdit(SingupPage, slabelSingup , 'seditPasswords', 'Şifre');
+    seditPasswords.Password = True;
+    
+    
+    
+  // SİNGUP BUTONU
+    sbuttonSingup=SingupPage.AddNewProButton(slabelSingup, 'sbuttonSingup', 'Log in');
+    sbuttonSingup.align=alTop;
+    sbuttonSingup.height=30;
+    sbuttonSingup.Width = 150;	
+    sbuttonSingup.margins.bottom = 10;
+    sbuttonSingup.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+    sbuttonSingup.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+    sbuttonSingup.clProSettings.FontHorzAlign = palcenter;
+    sbuttonSingup.clProSettings.IsRound = True;
+    sbuttonSingup.SetclProSettings(sbuttonSingup.clProSettings);
+    
+  // BUTONU İŞLEVSEL HALE GETİRME SQL BAĞLAMA
+     SingupPage.AddNewEvent(sbuttonSingup,tbeOnClick,'singupmember');
+
+    
+    
+  SingupPage.Run;
+}
+

@@ -1,0 +1,193 @@
+var
+  employeeMainPage: TclForm;
+  
+  // Üst Kısım Component'leri
+  headerPanel, navAndTabsPanel, tasksContainer,todayTasksPanel, weeklyTasksPanel, completedTasksPanel: TclProPanel;
+  welcomeLabel: TclLabel;
+  kitButton, todayTabButton, weeklyTabButton, completedTabButton: TClProButton;
+  task1_today, task2_today, task3_weekly,senderCheckBox: TclCheckBox;
+
+// --- SEKMELİ YAPI İÇİN KONTROL FONKSİYONU ---
+
+// İlgili görev panelini gösterir ve sekme butonlarını renklendirir.
+void ShowTasksPanel(panelName: String);
+{
+  // Önce tüm görev panellerini gizle
+  todayTasksPanel.Visible = False;
+  weeklyTasksPanel.Visible = False;
+  completedTasksPanel.Visible = False;
+  
+  // Butonların arka plan rengini varsayılana çevir
+  todayTabButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  weeklyTabButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  completedTabButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  
+  if (panelName == 'Today') 
+  {
+    todayTasksPanel.Visible = True;
+    todayTabButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d'); // Aktif sekme rengi
+  }
+  else if (panelName == 'Weekly') 
+  {
+    weeklyTasksPanel.Visible = True;
+    weeklyTabButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+  }
+  else if (panelName == 'Completed') 
+  {
+    completedTasksPanel.Visible = True;
+    completedTabButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+  }
+
+  // Ayarları component'lere uygula
+  todayTabButton.SetclProSettings(todayTabButton.clProSettings);
+  weeklyTabButton.SetclProSettings(weeklyTabButton.clProSettings);
+  completedTabButton.SetclProSettings(completedTabButton.clProSettings);
+}
+
+
+// --- EVENT HANDLERS ---
+
+void OnTodayTabClick; { ShowTasksPanel('Today'); }
+void OnWeeklyTabClick; { ShowTasksPanel('Weekly'); }
+void OnCompletedTabClick; { ShowTasksPanel('Completed'); }
+
+void OnKitButtonClick;
+{
+  Clomosy.RunUnit('employeeKitPage');
+}
+
+// Bir görevin CheckBox'ı tıklandığında çalışır.
+void OnTaskCheckChanged;
+{
+  senderCheckBox = TclCheckBox(employeeMainPage.Clsender);
+
+  if (senderCheckBox.isChecked == True)
+  {
+    // Görev tamamlandı olarak işaretlendi, "Tamamlananlar" sekmesine taşı.
+    senderCheckBox.Parent = completedTasksPanel;
+  }
+  else
+  {
+    // Görev tamamlanmadı olarak işaretlendi, orijinal sekmesine geri taşı.
+    // Hangi sekmeden geldiğini clTagInt ile anlıyoruz.
+    if (senderCheckBox.clTagInt == 1) // Bugünkü Görevler
+    {
+      senderCheckBox.Parent = todayTasksPanel;
+    }
+    else if (senderCheckBox.clTagInt == 2) // Haftalık Görevler
+    {
+      senderCheckBox.Parent = weeklyTasksPanel;
+    }
+  }
+}
+
+
+{
+  // --- SAYFA TASARIMI VE ANA KOD BLOĞU ---
+
+  employeeMainPage = TclForm.Create(Self);
+  employeeMainPage.SetFormColor('#f8edd9', '', clGNone);
+  employeeMainPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  // 1. BAŞLIK
+  welcomeLabel = employeeMainPage.AddNewLabel(employeeMainPage, 'welcomeLabel', 'Hoşgeldin,Kolay Gelsin');
+  welcomeLabel.Align = alTop;
+  welcomeLabel.Height = 40;
+  welcomeLabel.Margins.Top = 10;
+  welcomeLabel.StyledSettings = ssFamily;
+  welcomeLabel.TextSettings.Font.Size = 20;
+  welcomeLabel.TextSettings.HorzAlign = taCenter;
+  welcomeLabel.TextSettings.FontColor = clAlphaColor.clHexToColor('#3F51B5');
+
+  // 2. NAVİGASYON VE SEKME BUTONLARINI TUTAN PANEL
+  navAndTabsPanel = employeeMainPage.AddNewProPanel(employeeMainPage, 'navAndTabsPanel');
+  navAndTabsPanel.Align = alTop;
+  navAndTabsPanel.Height = 150; // İki satır için yükseklik
+  
+
+  // "Malzeme Listesi" Butonu
+  kitButton = employeeMainPage.AddNewProButton(navAndTabsPanel, 'kitButton', 'Malzeme Listesi');
+  kitButton.Align = alTop;
+  kitButton.Margins.Top=20;
+  kitButton.Margins.Bottom= 20;
+  kitButton.Height = 50;
+  kitButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FF9800');
+  kitButton.clProSettings.FontColor = clAlphaColor.clWhite;
+  kitButton.clProSettings.IsRound = True;
+  kitButton.SetclProSettings(kitButton.clProSettings);
+
+  // Sekme Butonları
+  todayTabButton = employeeMainPage.AddNewProButton(navAndTabsPanel, 'todayTab', 'Bugün');
+  todayTabButton.Align = alLeft;
+  todayTabButton.Width = 120;
+  todayTabButton.Margins.Left = 20;
+  todayTabButton.clProSettings.IsRound = True;
+  todayTabButton.SetclProSettings(todayTabButton.clProSettings);
+
+  weeklyTabButton = employeeMainPage.AddNewProButton(navAndTabsPanel, 'weeklyTab', 'Planlanan');
+  weeklyTabButton.Align = alLeft;
+  weeklyTabButton.Width = 120;
+  weeklyTabButton.Margins.Left = 10;
+  weeklyTabButton.clProSettings.IsRound = True;
+  weeklyTabButton.SetclProSettings(weeklyTabButton.clProSettings);
+  
+  completedTabButton = employeeMainPage.AddNewProButton(navAndTabsPanel, 'completedTab', 'Tamamlanan');
+  completedTabButton.Align = alLeft;
+  completedTabButton.Width = 120;
+  completedTabButton.Margins.Left = 10;
+  completedTabButton.clProSettings.IsRound = True;
+  completedTabButton.SetclProSettings(completedTabButton.clProSettings);
+
+  // 3. GÖREV CHECKBOX'LARININ GÖSTERİLECEĞİ ANA ALAN
+  tasksContainer = employeeMainPage.AddNewProPanel(employeeMainPage, 'tasksContainer');
+  tasksContainer.Align = alClient;
+ 
+  
+  // Her sekme için ayrı bir panel oluştur (görünürlükleri ShowTasksPanel ile kontrol edilecek)
+  todayTasksPanel = employeeMainPage.AddNewProPanel(tasksContainer, 'todayTasks');
+  todayTasksPanel.Align = alClient;
+  
+
+  weeklyTasksPanel = employeeMainPage.AddNewProPanel(tasksContainer, 'weeklyTasks');
+  weeklyTasksPanel.Align = alClient;
+  
+  
+  completedTasksPanel = employeeMainPage.AddNewProPanel(tasksContainer, 'completedTasks');
+  completedTasksPanel.Align = alClient;
+  
+
+  // --- ÖRNEK GÖREVLERİ OLUŞTUR ---
+
+  // Bugünkü Görevler (clTagInt = 1)
+  task1_today =employeeMainPage.AddNewCheckBox(todayTasksPanel, 'task1', 'Günlük raporu yöneticiye gönder.');
+  task1_today.Align = alTop;
+  task1_today.Height = 30;
+  task1_today.clTagInt = 1;
+
+  task2_today =employeeMainPage.AddNewCheckBox(todayTasksPanel, 'task2', 'Müşteri X ile toplantı yap.');
+  task2_today.Align = alTop;
+  task2_today.Height = 30;
+  task2_today.clTagInt = 1;
+
+  // Haftalık Görevler (clTagInt = 2)
+  task3_weekly = employeeMainPage.AddNewCheckBox(weeklyTasksPanel, 'task3', 'Haftalık performans metriklerini analiz et.');
+  task3_weekly.Align = alTop;
+  task3_weekly.Height = 30;
+  task3_weekly.clTagInt = 2;
+  
+  // --- EVENT ATAMALARI ---
+  employeeMainPage.AddNewEvent(kitButton, tbeOnClick, 'OnKitButtonClick');
+  employeeMainPage.AddNewEvent(todayTabButton, tbeOnClick, 'OnTodayTabClick');
+  employeeMainPage.AddNewEvent(weeklyTabButton, tbeOnClick, 'OnWeeklyTabClick');
+  employeeMainPage.AddNewEvent(completedTabButton, tbeOnClick, 'OnCompletedTabClick');
+  
+  // Tüm görev checkbox'ları için aynı event'i ata
+  employeeMainPage.AddNewEvent(task1_today, tbeOnClick, 'OnTaskCheckChanged');
+  employeeMainPage.AddNewEvent(task2_today, tbeOnClick, 'OnTaskCheckChanged');
+  employeeMainPage.AddNewEvent(task3_weekly, tbeOnClick, 'OnTaskCheckChanged');
+
+  // Varsayılan olarak "Bugünkü Görevler" sekmesini göster
+  ShowTasksPanel('Today');
+
+  employeeMainPage.Run;
+}

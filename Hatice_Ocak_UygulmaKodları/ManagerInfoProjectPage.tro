@@ -1,0 +1,259 @@
+uses uAddComponent, uSharedData;
+
+var
+  ManagerInfoProjectPage: TclForm;
+  // Arayüz Bileşenleri
+  labelInfoProject, ManagerInfoProjectPageName: TClProLabel;
+  projectNameEdit: TclProEdit;
+  findButton: TclProButton;
+  // Değişkenler doğru tipte tanımlandı (TclProButton)
+  panelButtonTask, panelButtonKit: TclProButton;
+  
+  // Sayfa Yönlendirme
+  TaskUnit, KitUnit: TclUnit;
+
+// Görevler butonuna tıklandığında çalışır.
+void GoToTasksPage;
+{
+  TaskUnit.UnitName = 'TasksPage';
+  TaskUnit.Run;
+}
+
+// Malzemeler butonuna tıklandığında çalışır.
+void GoToKitsPage;
+{
+  KitUnit.UnitName = 'KitsPage';
+  KitUnit.Run;
+}
+
+// Proje adına göre veritabanından tüm detayları çeker.
+/*void findAndLoadProjectData;
+var
+  query: TClSqlQuery;
+  projectName, projectInfoText: String;
+{
+  projectName = projectNameEdit.Text;
+
+  if (projectName == '')
+  {
+    ShowMessage('Lütfen aramak için bir proje adı girin.');
+    exit; // Fonksiyondan çık
+  }
+
+  query = TClSqlQuery.Create(nil);
+  try
+  {
+    // Bağlantı zaten global olarak kurulduğu için tekrar kurulmaz.
+    query.Connection = Clomosy.DBSQLServerConnection;
+    
+    // DÜZELTME: QuotedStr doğru kullanıldı, fazladan tırnaklar kaldırıldı.
+    query.SQL.Text = 'SELECT * FROM Projeler WHERE projeAdi = ' + QuotedStr(projectName);
+    query.Open;
+
+    if (query.Found)
+    {
+      uSharedData.selectedProjectID = query.FieldByName('ProjeID').AsString;
+      // DÜZELTME: .Caption yerine .Text kullanıldı.
+      ManagerInfoProjectPageName.Text = query.FieldByName('projeAdi').AsString;
+      
+      // DÜZELTME: NULL değerlere karşı güvenli metin birleştirme
+      projectInfoText = '';
+      if (query.FieldByName('MusteriAdi').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'Müşteri: ' + query.FieldByName('MusteriAdi').AsString + #13#10;
+      }
+      if (query.FieldByName('IletisimBilgisi').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'İletişim: ' + query.FieldByName('IletisimBilgisi').AsString + #13#10;
+      }
+      if (query.FieldByName('Durum').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'Durum: ' + query.FieldByName('Durum').AsString + #13#10;
+      }
+     
+      if (query.FieldByName('EkBilgi').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'Ek Bilgiler: ' + query.FieldByName('EkBilgi').AsString;
+      }
+             
+      labelInfoProject.Text = projectInfoText;
+      
+      panelButtonTask.Visible = True;
+      panelButtonKit.Visible = True;
+    }
+    else
+    {
+      ManagerInfoProjectPageName.Text = 'Proje Bulunamadı';
+      labelInfoProject.Text = 'Lütfen geçerli bir proje adı girip "Bilgileri Getir" butonuna basın.';
+      panelButtonTask.Visible = False;
+      panelButtonKit.Visible = False;
+      ShowMessage('Bu isimde bir proje bulunamadı!');
+    }
+  }
+  // 'Altın Kural'a uygun olarak finally bloğu { ... }} ile bitiriliyor.
+  finally
+  {
+    query.Close;
+    query.Free;
+  }}
+}
+*/
+void findAndLoadProjectData;
+var
+  query: TClSqlQuery;
+  projectName, projectInfoText: String;
+{
+  projectName = projectNameEdit.Text;
+
+  if (projectName == '')
+  {
+    ShowMessage('Lütfen aramak için bir proje adı girin.');
+    exit;
+  }
+
+
+  query = TClSqlQuery.Create(nil);
+  try
+  {
+    query.Connection = Clomosy.DBSQLServerConnection;
+    query.SQL.Text ='SELECT * FROM Projeler WHERE projeAdi = '''' + projeAdi + ''''' ;
+    query.Open;
+    /*query.SQL.Text = 'SELECT * FROM Projeler WHERE projeAdi = ' + QuotedStr(projectName);
+    query.Open;*/
+
+    if (query.Found)
+    {
+      // --- HATA AYIKLAMA BAŞLANGIÇ ---
+      // Program hangi mesajdan sonra çöküyorsa, sorun o mesajdan sonraki FieldByName satırındadır.
+      
+      ShowMessage('Adım 1: ProjeID okunuyor...');
+      uSharedData.selectedProjectID = query.FieldByName('ProjeID').AsString;
+      
+      ShowMessage('Adım 2: projeAdi okunuyor...');
+      ManagerInfoProjectPageName.Text = query.FieldByName('projeAdi').AsString;
+      
+      projectInfoText = '';
+
+      ShowMessage('Adım 3: MusteriAdi okunuyor...');
+      if (query.FieldByName('MusteriAdi').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'Müşteri: ' + query.FieldByName('MusteriAdi').AsString + #13#10;
+      }
+      
+      ShowMessage('Adım 4: IletisimBilgisi okunuyor...');
+      if (query.FieldByName('IletisimBilgisi').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'İletişim: ' + query.FieldByName('IletisimBilgisi').AsString + #13#10;
+      }
+      
+      ShowMessage('Adım 5: Durum okunuyor...');
+      if (query.FieldByName('Durum').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'Durum: ' + query.FieldByName('Durum').AsString + #13#10;
+      }
+      
+      ShowMessage('Adım 6: EkBilgi okunuyor...');
+      if (query.FieldByName('EkBilgi').IsNull == False)
+      {
+        projectInfoText = projectInfoText + 'Ek Bilgiler: ' + query.FieldByName('EkBilgi').AsString;
+      }
+      
+      ShowMessage('Adım 7: Tüm alanlar başarıyla okundu. Arayüz güncelleniyor.');
+      // --- HATA AYIKLAMA BİTİŞ ---
+             
+      labelInfoProject.Text = projectInfoText;
+      
+      panelButtonTask.Visible = True;
+      panelButtonKit.Visible = True;
+    }
+    else
+    {
+      ShowMessage('Bu isimde bir proje veritabanında bulunamadı!');
+      ManagerInfoProjectPageName.Text = 'Proje Bulunamadı';
+      labelInfoProject.Text = 'Lütfen geçerli bir proje adı girip "Bilgileri Getir" butonuna basın.';
+      panelButtonTask.Visible = False;
+      panelButtonKit.Visible = False;
+    }
+  }
+  finally
+  {
+    query.Close;
+    query.Free;
+  }}
+}
+
+
+{ // ANA BLOK
+  ManagerInfoProjectPage = TclForm.Create(self);
+  TaskUnit = TclUnit.Create;
+  KitUnit = TclUnit.Create;
+  
+  // DÜZELTME: Veritabanı bağlantısı, dokümandaki gibi, form oluşturulurken SADECE BİR KEZ yapılır.
+  try
+  {
+    // Lütfen buradaki bilgilerin %100 doğru olduğundan emin olun.
+    Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+  }
+  except
+  {
+    ShowMessage('VERİTABANI BAĞLANTI HATASI!' + #13#10 + LastExceptionMessage);
+    // Bağlantı başarısızsa formu çalıştırma.
+    exit; 
+  }}
+  
+  // --- ARAYÜZ OLUŞTURMA ---
+  ManagerInfoProjectPage.SetFormColor('#f8edd9','',clGNone);
+  ManagerInfoProjectPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+  ManagerInfoProjectPageName = uAddComponent.AddTitle(ManagerInfoProjectPage,'ManagerInfoProjectPageName','Proje Detayları');
+  
+  projectNameEdit = ManagerInfoProjectPage.AddNewProEdit(ManagerInfoProjectPage, 'projectNameEdit', 'Proje Adını Girin');
+  projectNameEdit.Align = alTop;
+  projectNameEdit.Height = 40;
+  projectNameEdit.Margins.Top = 10;
+  projectNameEdit.Margins.Left = 10;
+  projectNameEdit.Margins.Right = 10;
+
+  findButton = ManagerInfoProjectPage.AddNewProButton(ManagerInfoProjectPage, 'findButton', 'Bilgileri Getir');
+  findButton.Align = alTop;
+  findButton.Height = 40;
+  findButton.Margins.Top = 10;
+  findButton.Margins.Left = 10;
+  findButton.Margins.Right = 10;
+  ManagerInfoProjectPage.AddNewEvent(findButton, tbeOnClick, 'findAndLoadProjectData');
+  
+  labelInfoProject = ManagerInfoProjectPage.AddNewProLabel(ManagerInfoProjectPage, 'labelInfoProject', 'Lütfen görüntülenecek projenin adını girip "Bilgileri Getir" butonuna basın.' );
+  labelInfoProject.Align = alTop;
+  labelInfoProject.Height = 250;
+  labelInfoProject.Margins.Top = 10;
+  labelInfoProject.Margins.Left = 10;
+  labelInfoProject.Margins.Right = 10;
+  labelInfoProject.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+  labelInfoProject.clProSettings.BorderColor = clAlphaColor.clHexToColor('#995f1e');
+  labelInfoProject.clProSettings.BorderWidth = 1;
+  labelInfoProject.clProSettings.IsRound = True;
+  labelInfoProject.clProSettings.WordWrap = True;
+  labelInfoProject.clProSettings.FontHorzAlign = palLeading;
+  labelInfoProject.SetclProSettings(labelInfoProject.clProSettings);
+  
+  panelButtonTask = ManagerInfoProjectPage.AddNewProButton(ManagerInfoProjectPage, 'panelButtonTask', 'Görevler');
+  panelButtonTask.Align = alLeft;
+  panelButtonTask.Width = 150;
+  panelButtonTask.Height = 50;
+  panelButtonTask.Margins.Left = 20;
+  panelButtonTask.Margins.Bottom = 20;
+  ManagerInfoProjectPage.AddNewEvent(panelButtonTask, tbeOnClick, 'GoToTasksPage');
+  panelButtonTask.Visible = False;
+  
+  panelButtonKit = ManagerInfoProjectPage.AddNewProButton(ManagerInfoProjectPage, 'panelButtonKit', 'Malzemeler');
+  panelButtonKit.Align = alRight;
+  panelButtonKit.Width = 150;
+  panelButtonKit.Height = 50;
+  panelButtonKit.Margins.Right = 20;
+  panelButtonKit.Margins.Bottom = 20;
+  ManagerInfoProjectPage.AddNewEvent(panelButtonKit, tbeOnClick, 'GoToKitsPage');
+  panelButtonKit.Visible = False;
+  
+  uAddComponent.addMenu(ManagerInfoProjectPage,'menuFrame','');
+
+  ManagerInfoProjectPage.Run;
+}

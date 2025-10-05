@@ -1,0 +1,161 @@
+uses uAddComponent;
+
+var
+  EditEmployeePage: TclForm;
+  adEdit, soyadEdit,rolEdit, maasEdit, tarihEdit: TclProEdit;
+  findButton,updateButton: TclProButton;
+  query, updateQuery: TclSqlQuery;
+  targetPerformansID: String;
+
+// Ad ve Soyad'a göre kişiyi bulur, mevcut verilerini ekrana yükler.
+void findAndLoadData;
+var
+  sqlText, ad, soyad: String;
+{
+  ad = adEdit.Text;
+  soyad = soyadEdit.Text;
+
+  if ((ad <> '') && (soyad <> ''))
+  {
+    try
+    {
+      Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+      query.Connection = Clomosy.DBSQLServerConnection;
+      
+      sqlText = 'SELECT cp.PerformansID, cp.Maas, cp.calisanRolü, cp.ZamTarihi ' +
+                'FROM CalisanPerformans cp INNER JOIN Kullanicilar k ON cp.CalisanID = k.KullaniciID ' +
+                'WHERE k.Ad = ''' + ad + ''' AND k.Soyad = ''' + soyad + '''';
+      query.SQL.Text = sqlText;
+      query.Open;
+
+      if (query.Found == True)
+      {
+        targetPerformansID = query.FieldByName('PerformansID').AsString;
+        rolEdit.Text = query.FieldByName('calisanRolü').AsString;
+        maasEdit.Text = query.FieldByName('Maas').AsString;
+        tarihEdit.Text = query.FieldByName('ZamTarihi').AsString;
+        
+        ShowMessage('Kullanıcı bilgileri bulundu ve yüklendi.');
+      }
+      else
+      {
+        targetPerformansID = '';
+        rolEdit.Text = '';
+        maasEdit.Text = '';
+        tarihEdit.Text = '';
+        ShowMessage('Bu isimde bir kullanıcı bulunamadı!');
+      }
+    }
+    finally
+    {
+      query.Close;
+    }}
+  }
+}
+
+// Ekrana girilen yeni verilerle UPDATE işlemini yapar.
+void executeUpdate;
+var
+  sqlText: String;
+{
+  if (targetPerformansID <> '')
+  {
+    try
+    {
+      Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+      updateQuery.Connection = Clomosy.DBSQLServerConnection;
+      
+      sqlText = 'UPDATE CalisanPerformans SET ' +
+                'calisanRolü = ''' + rolEdit.Text + ''', ' +
+                'Maas = ' + maasEdit.Text + ', ' +
+                'ZamTarihi = ''' + tarihEdit.Text + ''' ' +
+                'WHERE PerformansID = ' + targetPerformansID;
+                
+      updateQuery.SQL.Text = sqlText;
+      updateQuery.ExecSQL;
+      
+      ShowMessage('Performans bilgileri başarıyla güncellendi!');
+      EditEmployeePage.Close;
+    }
+    finally
+    {
+      updateQuery.Close;
+    }}
+  }
+  else
+  {
+    ShowMessage('Lütfen önce "Bilgileri Getir" butonu ile bir kullanıcı bulun.');
+  }
+}
+
+{
+  EditEmployeePage = TclForm.Create(Self);
+  
+  // Sorgu nesnelerini en başta oluşturuyoruz.
+  query = TClSqlQuery.Create(nil);
+  updateQuery = TClSqlQuery.Create(nil);
+  
+  EditEmployeePage.SetFormColor('#f8edd9','',clGNone);
+  EditEmployeePage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  // --- ARAMA BÖLÜMÜ ---
+  adEdit = EditEmployeePage.AddNewProEdit(EditEmployeePage, 'adEdit', 'Ad');
+  adEdit.Align = alTop;
+  adEdit.Height = 40;
+  adEdit.Margins.Top = 20;
+  adEdit.Margins.Left = 20;
+  adEdit.Margins.Right = 20;
+
+  soyadEdit = EditEmployeePage.AddNewProEdit(EditEmployeePage, 'soyadEdit', 'Soyad');
+  soyadEdit.Align = alTop;
+  soyadEdit.Height = 40;
+  soyadEdit.Margins.Top = 20;
+  soyadEdit.Margins.Left = 20;
+  soyadEdit.Margins.Right = 20;
+
+  findButton = EditEmployeePage.AddNewProButton(EditEmployeePage, 'findButton', 'Bilgileri Getir');
+  findButton.Align = alTop;
+  findButton.Height = 40;
+  findButton.Margins.Top = 20;
+  findButton.Margins.Left = 20;
+  findButton.Margins.Right = 20;
+  EditEmployeePage.AddNewEvent(findButton, tbeOnClick, 'findAndLoadData');
+
+  // --- DÜZENLEME BÖLÜMÜ ---
+  rolEdit = EditEmployeePage.AddNewProEdit(EditEmployeePage, 'rolEdit', 'Yeni Çalışan Rolü');
+  rolEdit.Align = alTop;
+  rolEdit.Height = 40;
+  rolEdit.Margins.Top = 20;
+  rolEdit.Margins.Left = 20;
+  rolEdit.Margins.Right = 20;
+
+  maasEdit = EditEmployeePage.AddNewProEdit(EditEmployeePage, 'maasEdit', 'Yeni Maas');
+  maasEdit.Align = alTop;
+  maasEdit.Height = 40;
+  maasEdit.Margins.Top = 20;
+  maasEdit.Margins.Left = 20;
+  maasEdit.Margins.Right = 20;
+
+  tarihEdit = EditEmployeePage.AddNewProEdit(EditEmployeePage, 'tarihEdit', 'Yeni Zam Tarihi');
+  tarihEdit.Align = alTop;
+  tarihEdit.Height = 40;
+  tarihEdit.Margins.Top = 20;
+  tarihEdit.Margins.Left = 20;
+  tarihEdit.Margins.Right = 20;
+  
+
+  // --- GÜNCELLEME BUTONU ---
+  updateButton = EditEmployeePage.AddNewProButton(EditEmployeePage, 'updateButton', 'Güncelle');
+  updateButton.Align = alBottom;
+  updateButton.Height = 45;
+  updateButton.Margins.Bottom = 20; 
+  updateButton.Margins.Left = 50;
+  updateButton.Margins.Right = 50;
+  updateButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+  updateButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+  updateButton.clProSettings.IsRound = True;
+  updateButton.SetclProSettings(updateButton.clProSettings);
+  EditEmployeePage.AddNewEvent(updateButton, tbeOnClick, 'executeUpdate');
+  
+  EditEmployeePage.Run;
+}

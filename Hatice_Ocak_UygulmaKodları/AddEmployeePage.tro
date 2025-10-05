@@ -1,0 +1,137 @@
+var
+  AddEmployeePage: TclForm;
+  titlePanel, formPanel, buttonPanel: TclProPanel;
+  pageTitle: TclProLabel;
+  nameLabel, surnameLabel, roleLabel, salaryLabel: TclProLabel;
+  nameEdit, surnameEdit, roleEdit, salaryEdit: TclProEdit;
+  saveButton, cancelButton: TclProButton;
+
+
+void OnSaveClick;
+{
+  
+  ShowMessage('Çalışan bilgileri başarıyla kaydedildi.');
+  
+
+  Clomosy.RunUnit('ManagerEmployeePage');
+}
+
+// "İptal" butonuna tıklandığında çalışacak fonksiyon
+void OnCancelClick;
+{
+  // Hiçbir işlem yapmadan personel listesi sayfasına geri döner.
+  Clomosy.RunUnit('ManagerEmployeePage');
+}
+
+{
+  // ANA SAYFA TASARIMI
+  AddEmployeePage = TclForm.Create(Self);
+  AddEmployeePage.SetFormColor('#f8edd9', '', clGNone);
+  AddEmployeePage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  // SAYFA BAŞLIĞI PANELİ
+  titlePanel = AddEmployeePage.AddNewProPanel(AddEmployeePage, 'titlePanel');
+  titlePanel.Align = alTop;
+  titlePanel.Height = 60;
+  titlePanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  titlePanel.SetclProSettings(titlePanel.clProSettings);
+
+  // SAYFA BAŞLIĞI YAZISI
+  pageTitle = AddEmployeePage.AddNewProLabel(titlePanel, 'pageTitle', 'Yeni Çalışan Ekle');
+  pageTitle.Align = alClient;
+  pageTitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  pageTitle.clProSettings.FontSize = 24;
+  pageTitle.clProSettings.FontHorzAlign = palCenter;
+  pageTitle.clProSettings.FontVertAlign = palCenter;
+  pageTitle.SetclProSettings(pageTitle.clProSettings);
+  
+  // BUTONLARI TAŞIYACAK ALT PANEL
+  buttonPanel = AddEmployeePage.AddNewProPanel(AddEmployeePage, 'buttonPanel');
+  buttonPanel.Align = alBottom;
+  buttonPanel.Height = 80;
+  buttonPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9'); 
+  buttonPanel.SetclProSettings(buttonPanel.clProSettings);
+  
+  // GİRİŞ ALANLARINI İÇEREN ANA PANEL
+  formPanel = AddEmployeePage.AddNewProPanel(AddEmployeePage, 'formPanel');
+  formPanel.Align = alClient;
+  formPanel.Margins.Left = 20;
+  formPanel.Margins.Right = 20;
+  formPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9'); 
+  formPanel.SetclProSettings(formPanel.clProSettings);
+
+  //--- FORM ALANLARI ---
+
+  // Çalışan Adı Etiketi ve Giriş Alanı
+  nameLabel = AddEmployeePage.AddNewProLabel(formPanel, 'nameLabel', 'Çalışanın Adı');
+  nameLabel.Align = alTop;
+  nameLabel.Margins.Top = 20;
+  nameLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  nameLabel.SetclProSettings(nameLabel.clProSettings);
+  nameEdit = AddEmployeePage.AddNewProEdit(formPanel, 'nameEdit', '');
+  nameEdit.Align = alTop;
+  nameEdit.Height = 40;
+  nameEdit.Margins.Top = 5;
+  nameEdit.Margins.Bottom = 15;
+
+  // Çalışan Soyadı Etiketi ve Giriş Alanı
+  surnameLabel = AddEmployeePage.AddNewProLabel(formPanel, 'surnameLabel', 'Çalışanın Soyadı');
+  surnameLabel.Align = alTop;
+  surnameLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  surnameLabel.SetclProSettings(surnameLabel.clProSettings);
+  surnameEdit = AddEmployeePage.AddNewProEdit(formPanel, 'surnameEdit', '');
+  surnameEdit.Align = alTop;
+  surnameEdit.Height = 40;
+  surnameEdit.Margins.Top = 5;
+  surnameEdit.Margins.Bottom = 15;
+
+  // Çalışan Rolü Etiketi ve Giriş Alanı
+  roleLabel = AddEmployeePage.AddNewProLabel(formPanel, 'roleLabel', 'Çalışanın Rolü');
+  roleLabel.Align = alTop;
+  roleLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  roleLabel.SetclProSettings(roleLabel.clProSettings);
+  roleEdit = AddEmployeePage.AddNewProEdit(formPanel, 'roleEdit', '');
+  roleEdit.Align = alTop;
+  roleEdit.Height = 40;
+  roleEdit.Margins.Top = 5;
+  roleEdit.Margins.Bottom = 15;
+
+  // Çalışan Maaşı Etiketi ve Giriş Alanı
+  salaryLabel = AddEmployeePage.AddNewProLabel(formPanel, 'salaryLabel', 'Çalışanın Maaşı');
+  salaryLabel.Align = alTop;
+  salaryLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  salaryLabel.SetclProSettings(salaryLabel.clProSettings);
+  salaryEdit = AddEmployeePage.AddNewProEdit(formPanel, 'salaryEdit', '');
+  salaryEdit.Align = alTop;
+  salaryEdit.Height = 40;
+  salaryEdit.Margins.Top = 5;
+  
+  //--- BUTONLAR ---
+
+  // İPTAL BUTONU
+  cancelButton = AddEmployeePage.AddNewProButton(buttonPanel, 'cancelButton', 'İptal');
+  cancelButton.Align = alRight; // Sağa hizala
+  cancelButton.Width = 120;
+  cancelButton.Height = 45;
+  cancelButton.Margins.Right = 20;
+  cancelButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f44336'); // Kırmızı
+  cancelButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#FFFFFF');
+  cancelButton.clProSettings.IsRound = True;
+  cancelButton.SetclProSettings(cancelButton.clProSettings);
+  AddEmployeePage.AddNewEvent(cancelButton, tbeOnClick, 'OnCancelClick');
+
+  // KAYDET BUTONU
+  saveButton = AddEmployeePage.AddNewProButton(buttonPanel, 'saveButton', 'Kaydet');
+  saveButton.Align = alRight; 
+  saveButton.Width = 120;
+  saveButton.Height = 45;
+  saveButton.Margins.Right = 10;
+  saveButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#4CAF50'); // Yeşil
+  saveButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#FFFFFF');
+  saveButton.clProSettings.IsRound = True;
+  saveButton.SetclProSettings(saveButton.clProSettings);
+  AddEmployeePage.AddNewEvent(saveButton, tbeOnClick, 'OnSaveClick');
+
+  // Sayfayı Çalıştır
+  AddEmployeePage.Run;
+}

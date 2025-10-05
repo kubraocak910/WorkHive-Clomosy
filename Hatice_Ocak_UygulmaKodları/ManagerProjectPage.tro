@@ -1,0 +1,114 @@
+uses uAddComponent, uSharedData;
+
+var
+  ManagerProjectPage: TclForm;
+  mainScrollBox: TClVertScrollBox;
+  DetailsUnit: TclUnit;
+  ongoingTitle, completedTitle: TclProLabel;
+
+// Bir proje butonuna tıklandığında çalışır.
+void OnProjectButtonClick;
+{
+  Clomosy.RunUnit('ManagerInfoProjectPage');
+}
+// Sadece bir proje butonu oluşturur.
+void CreateProjectButton(projeAdi: String);
+var
+  projectButton: TClProButton;
+{
+  projectButton = ManagerProjectPage.AddNewProButton(mainScrollBox, 'btn_' + projeAdi, projeAdi);
+  projectButton.Align = alTop;
+  projectButton.Height = 60;
+  // Her butonun bir öncekinden 15 piksel aşağıda olmasını sağlıyoruz.
+  projectButton.Margins.Top = 15;
+  projectButton.Margins.Left = 15;
+  projectButton.Margins.Right = 15;
+  
+  projectButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#995f1e');
+  projectButton.clProSettings.IsRound = True;
+  projectButton.clProSettings.FontHorzAlign = palCenter;
+  projectButton.clProSettings.FontVertAlign = palCenter;
+  projectButton.clProSettings.FontSize = 18;
+  projectButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#f8edd9');
+  projectButton.SetclProSettings(projectButton.clProSettings);
+  
+  ManagerProjectPage.AddNewEvent(projectButton, tbeOnClick, 'OnProjectButtonClick');
+}
+
+// Projeleri durumlarına göre, iki ayrı sorgu ile çeker ve ekler.
+void loadProjectsByStatus;
+var
+  query: TClSqlQuery;
+  sqlText: String;
+{
+  query = TClSqlQuery.Create(nil);
+  try
+  {
+    Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+    query.Connection = Clomosy.DBSQLServerConnection;
+    
+    // 1. Önce "Tamamlanmadı" olanları çek ve ekle
+    sqlText = 'SELECT projeAdi FROM Projeler WHERE Durum = ''Tamamlanmadı''';
+    query.SQL.Text = sqlText;
+    query.Open;
+    // Eğer en az bir tane varsa, başlığı görünür yap
+    if (query.RecordCount > 0) { ongoingTitle.Visible = True; }
+    while (query.Eof == False)
+    {
+      CreateProjectButton(query.FieldByName('projeAdi').AsString);
+      query.Next;
+    }
+    query.Close;
+
+    // 2. Sonra "Tamamlandı" olanları çek ve ekle
+    sqlText = 'SELECT projeAdi FROM Projeler WHERE Durum = ''Tamamlandı''';
+    query.SQL.Text = sqlText;
+    query.Open;
+    // Eğer en az bir tane varsa, başlığı görünür yap
+    if (query.RecordCount > 0) { completedTitle.Visible = True; }
+    while (query.Eof == False)
+    {
+      CreateProjectButton(query.FieldByName('projeAdi').AsString);
+      query.Next;
+    }
+    query.Close;
+  }
+  finally
+  {
+    query.Free;
+  }}
+}
+
+{
+  ManagerProjectPage = TclForm.Create(Self);
+  DetailsUnit = TclUnit.Create;
+  
+  ManagerProjectPage.SetFormColor('#f8edd9','',clGNone);
+  ManagerProjectPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  mainScrollBox = ManagerProjectPage.AddNewVertScrollBox(ManagerProjectPage, 'mainScrollBox');
+  mainScrollBox.Align = alClient;
+
+  
+  // Başlıkları oluştur ama başlangıçta GİZLE.
+  ongoingTitle = ManagerProjectPage.AddNewProLabel(mainScrollBox, 'ongoingTitle', 'DEVAM EDEN PROJELER');
+  ongoingTitle.Align = alTop;
+  ongoingTitle.Visible = False;
+  ongoingTitle.Margins.Top = 15;
+  ongoingTitle.clProSettings.FontSize = 18;
+  ongoingTitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  ongoingTitle.SetclProSettings(ongoingTitle.clProSettings);
+  
+  completedTitle = ManagerProjectPage.AddNewProLabel(mainScrollBox, 'completedTitle', 'TAMAMLANMIŞ PROJELER');
+  completedTitle.Align = alTop;
+  completedTitle.Visible = False;
+  completedTitle.Margins.Top = 15;
+  completedTitle.clProSettings.FontSize = 18;
+  completedTitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  completedTitle.SetclProSettings(completedTitle.clProSettings);
+  
+  loadProjectsByStatus;
+  
+  uAddComponent.addMenu(ManagerProjectPage, 'menuFrame', '');
+  ManagerProjectPage.Run;
+}

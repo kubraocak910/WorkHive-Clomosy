@@ -1,0 +1,170 @@
+uses uAddComponent;
+
+var
+  TaskPage,addTaskPopup: TclForm;
+  pageName, pageContainer: TclProPanel;
+  todayButton, plannedButton, completedButton, addTaskButton, confirmButton, cancelButton: TclProButton;
+  taskTable: TclStringGrid;
+  taskDescEdit, assignedPersonEdit: TclProEdit;
+  dueDateEdit: TClProDateEdit;
+  
+  
+
+// TODAY, PLANNED VE COMPLETED BUTONLARININ OLDUĞU PANEL
+void ShowPanel(panelName: String);
+{
+  if panelName == 'Today' 
+  {
+    todayButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+    plannedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+    completedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  
+  }
+  else if panelName == 'Planned' 
+  {
+    todayButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+    plannedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+    completedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+    
+  }
+  else if panelName == 'Completed' 
+  {
+    todayButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+    plannedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+    completedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+    
+  };
+
+  todayButton.SetclProSettings(todayButton.clProSettings);
+  plannedButton.SetclProSettings(plannedButton.clProSettings);
+  completedButton.SetclProSettings(completedButton.clProSettings);
+}
+
+void OnTodayClick;
+{
+  ShowPanel('Today');
+}
+
+void OnPlannedClick;
+{
+  ShowPanel('Planned');
+}
+
+void OnCompletedClick;
+{
+  ShowPanel('Completed');
+}
+
+//----- YENİ EKLENEN POPUP OLAYLARI -----
+
+// Popup'taki "Onayla" butonuna basıldığında çalışır
+
+
+// Ana formdaki "Görev Ekle" butonuna basıldığında bu fonksiyon çalışır
+void OnAddTaskClick;
+{
+  Clomosy.Rununit('addTaskPopup');
+}
+
+
+{
+  // SAYFA TASARIMI
+  TaskPage = TclForm.Create(Self);
+  TaskPage.SetFormColor('#f8edd9', '', clGNone);
+  TaskPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+  pageName = uAddComponent.AddTitle(TaskPage, 'pageName', 'Proje 1');
+
+  // BUTON PANELİ
+  pageContainer = TaskPage.AddNewProPanel(TaskPage, 'pageContainer');
+  pageContainer.Align = alTop;
+  pageContainer.Height = 60;
+  pageContainer.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  pageContainer.SetclProSettings(pageContainer.clProSettings);
+
+  // TODAY BUTONU
+  todayButton = TaskPage.AddNewProButton(pageContainer, 'todayButton', 'Today');
+  todayButton.Align = alLeft;
+  todayButton.Margins.Left = 36;
+  todayButton.Width = 100;
+  todayButton.clProSettings.FontSize = 16;
+  todayButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  todayButton.clProSettings.FontHorzAlign = palCenter;
+  todayButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+  todayButton.clProSettings.IsRound = True;
+  todayButton.SetclProSettings(todayButton.clProSettings);
+
+  // PLANNED BUTONU
+  plannedButton = TaskPage.AddNewProButton(pageContainer, 'plannedButton', 'Planned');
+  plannedButton.Align = alLeft;
+  plannedButton.Margins.Left = 10;
+  plannedButton.Width = 100;
+  plannedButton.clProSettings.FontSize = 16;
+  plannedButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  plannedButton.clProSettings.FontHorzAlign = palCenter;
+  plannedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  plannedButton.clProSettings.IsRound = True;
+  plannedButton.SetclProSettings(plannedButton.clProSettings);
+  
+  // COMPLETED BUTONU
+  completedButton = TaskPage.AddNewProButton(pageContainer, 'completedButton', 'Completed');
+  completedButton.Align = alLeft;
+  completedButton.Margins.Left = 10;
+  completedButton.Width = 100;
+  completedButton.clProSettings.FontSize = 16;
+  completedButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  completedButton.clProSettings.FontHorzAlign = palCenter;
+  completedButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  completedButton.clProSettings.IsRound = True;
+  completedButton.SetclProSettings(completedButton.clProSettings);
+
+  // TABLO TASARIMI
+  taskTable = TaskPage.AddNewStringGrid(TaskPage, 'taskTable');
+  taskTable.Align = alClient;
+  taskTable.Margins.Top = 10;
+  taskTable.Margins.Bottom = 80;
+  
+  // Sütun başlıklarını ekle
+    if (taskTable.ColumnCount>0)
+   {
+      taskTable.Columns[0].Header = 'Görev Tanımı';
+      taskTable.Columns[1].Header = 'ilgili kişi';
+      taskTable.Columns[2].Header = 'Son Tarih';
+   }
+
+ 
+  // GÖREV EKLEME BUTONU
+  addTaskButton = TaskPage.AddNewProButton(TaskPage, 'addTaskButton', 'Görev Ekle');
+  addTaskButton.Align = alBottom;
+  addTaskButton.Margins.Bottom = 20; 
+  addTaskButton.Margins.Right = 20;
+  addTaskButton.Margins.Left = 20;
+  addTaskButton.Width = 150;
+  addTaskButton.Height = 40;
+  addTaskButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+  addTaskButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+  addTaskButton.clProSettings.FontHorzAlign = palCenter;
+  addTaskButton.clProSettings.IsRound = True;
+  addTaskButton.SetclProSettings(addTaskButton.clProSettings);
+  
+  // ANA FORM BUTON OLAYLARI
+  TaskPage.AddNewEvent(todayButton, tbeOnClick, 'OnTodayClick');
+  TaskPage.AddNewEvent(plannedButton, tbeOnClick, 'OnPlannedClick');
+  TaskPage.AddNewEvent(completedButton, tbeOnClick, 'OnCompletedClick');
+  TaskPage.AddNewEvent(addTaskButton, tbeOnClick, 'OnAddTaskClick');
+
+  // MENÜ
+  uAddComponent.addMenu(TaskPage, 'menuBar', '');
+  
+  // Varsayılan olarak Today panelini göster
+  ShowPanel('Today');
+  
+  TaskPage.Run;
+  
+}
+
+
+
+
+
+
+

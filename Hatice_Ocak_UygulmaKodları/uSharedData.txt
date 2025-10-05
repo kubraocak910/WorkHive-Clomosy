@@ -1,0 +1,9 @@
+var
+  // Bu değişken, EditEmployeePage için kullanılıyordu.
+  selectedEmployeeID: String;
+  
+  // YENİ EKLENECEK DEĞİŞKENLER:
+  // Proje listesinden tıklanan projenin ADINI taşımak için.
+  selectedProjectName: String;
+  // Proje detay sayfasından diğer sayfalara projenin ID'sini taşımak için.
+  selectedProjectID: String;

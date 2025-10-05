@@ -1,0 +1,332 @@
+uses uAddComponent;
+
+var
+  AddProjectPage: TclForm;
+  titlePanel, formPanel, buttonPanel, employeeAddPanel: TclProPanel;
+  pageTitle ,projectNameLabel, customerInfoLabel, employeeSelectionLabel, extraInfoLabel: TclProLabel;
+  projectNameEdit, customerNameEdit, customerContactEdit: TclProEdit;
+  employeeComboBox: TclComboBox;
+  addEmployeeToListButton, saveButton, cancelButton: TclProButton;
+
+  extraInfoMemo,selectedEmployeesMemo: TclProMemo;
+     // JSON metnini Grid'in anlayacağı bir veri kaynağına dönüştürür.
+  projectQuery, employeeQuery: TclSqlQuery;
+  lastProjectID: Integer;
+  
+  // DOKÜMANTASYONA GÖRE DOĞRU KULLANIM:
+  // Seçilen çalışanların isimlerini ve ID'lerini tutmak için iki ayrı TclStringList kullanıyoruz.
+  selectedEmployeeNames,selectedEmployeeIDs: TclStringList;
+ 
+
+void setupDatabaseConnection;
+{
+  try
+  {
+    Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+  }
+  except
+  {
+    ShowMessage('Veritabanı bağlantısı kurulamadı: ' + LastExceptionMessage);
+  }}
+}
+
+void loadEmployeesIntoComboBox;
+var
+  sqlText, fullName: String;
+  employeeID: Integer;
+{
+  employeeQuery = TClSqlQuery.Create(nil);
+  
+  try
+  {
+    employeeQuery.Connection = Clomosy.DBSQLServerConnection;
+    sqlText = 'SELECT KullaniciID, Ad, Soyad FROM Kullanicilar WHERE Rol = ''employee''';
+    employeeQuery.SQL.Text = sqlText;
+    employeeQuery.Open;
+
+    employeeComboBox.Items.Clear;
+    
+    while (employeeQuery.Eof == False)
+    {
+      fullName = employeeQuery.FieldByName('Ad').AsString + ' ' + employeeQuery.FieldByName('Soyad').AsString;
+      employeeID = employeeQuery.FieldByName('KullaniciID').AsInteger;
+      employeeComboBox.AddItem(fullName, IntToStr(employeeID));
+      employeeQuery.Next;
+    }
+  }
+  finally
+  {
+    employeeQuery.Close;
+    employeeQuery.Free;
+  }}
+}
+
+/*void saveProjectAndEmployees;
+var
+  sqlText, employeeID: String;
+  i: Integer;
+{
+  projectQuery = TClSqlQuery.Create(nil);
+  try
+  {
+    projectQuery.Connection = Clomosy.DBSQLServerConnection;
+    
+  // 1. Sütun listesine "Durum" eklendi.
+sqlText = 'INSERT INTO Projeler (ProjeAdi, MusteriAdi, IletisimBilgisi, EkBilgi, Durum) VALUES (' +
+          '''' + projectNameEdit.Text + ''', ' +
+          '''' + customerNameEdit.Text + ''', ' +
+          '''' + customerContactEdit.Text + ''', ' +
+          '''' + extraInfoMemo.Text + ''', ' +
+          '''Tamamlanmadı''); ' + 
+          'SELECT SCOPE_IDENTITY() AS LastID;';
+    projectQuery.SQL.Text = sqlText;
+    projectQuery.Open;
+    
+    if (projectQuery.Found == True)
+    {
+      lastProjectID = projectQuery.FieldByName('LastID').AsInteger;
+    }
+    projectQuery.Close;
+
+    if (lastProjectID > 0)
+    {
+      // Döngü artık ID listesi üzerinden çalışıyor.
+      for (i = 0 to selectedEmployeeIDs.Count - 1)
+      {
+        // ID'yi doğrudan ID listesinden alıyoruz.
+        employeeID = Clomosy.StringListItemString(selectedEmployeeIDs, i);
+        
+        sqlText = 'INSERT INTO ProjectEmployees (ProjectID, EmployeeID) VALUES (' +
+                  IntToStr(lastProjectID) + ', ' +
+                  employeeID + ');';
+                  
+        projectQuery.SQL.Text = sqlText;
+        projectQuery.ExecSQL;
+      }
+    }
+    
+    ShowMessage('Yeni proje ve çalışan atamaları başarıyla kaydedildi.');
+    AddProjectPage.Close;
+  }
+  finally
+  {
+    projectQuery.Close;
+    projectQuery.Free;
+  }}
+}
+*/
+void saveProjectAndEmployees;
+var
+  sqlText, employeeListString: String;
+  // Verileri SQL'e göndermeden önce güvenli hale getirmek için geçici değişkenler
+  safeProjeAdi, safeMusteriAdi, safeIletisim, safeEkBilgi: String;
+{
+  projectQuery = TClSqlQuery.Create(nil);
+  try
+  {
+    projectQuery.Connection = Clomosy.DBSQLServerConnection;
+    
+    // 1. ADIM: Seçilen çalışanları tek bir metne dönüştür
+    if (selectedEmployeeNames.Count == 0)
+    {
+      employeeListString = '';
+    }
+    else
+    {
+      selectedEmployeeNames.Delimiter = ', ';
+      employeeListString = selectedEmployeeNames.DelimitedText;
+    }
+    
+    // 2. ADIM: GÜVENLİK - Sizin gönderdiğiniz doğru fonksiyonu kullanıyoruz
+    // Her bir tek tırnağı (''), iki tek tırnakla ('') değiştirerek SQL'i güvenli hale getiriyoruz.
+    safeProjeAdi = clGetStringReplace(projectNameEdit.Text, '''', '''''');
+    safeMusteriAdi = clGetStringReplace(customerNameEdit.Text, '''', '''''');
+    safeIletisim = clGetStringReplace(customerContactEdit.Text, '''', '''''');
+    safeEkBilgi = clGetStringReplace(extraInfoMemo.Text, '''', '''''');
+    
+    // 3. ADIM: SQL komutunu, artık güvenli olan bu yeni değişkenlerle oluşturuyoruz.
+    sqlText = 'INSERT INTO Projeler (projeAdi, MusteriAdi, IletisimBilgisi, EkBilgi, Durum, ProjeCalisan) VALUES (' +
+              '''' + safeProjeAdi + ''', ' +
+              '''' + safeMusteriAdi + ''', ' +
+              '''' + safeIletisim + ''', ' +
+              '''' + safeEkBilgi + ''', ' +
+              '''Tamamlanmadı'', ' +
+              '''' + employeeListString + ''');';
+              
+    projectQuery.SQL.Text = sqlText;
+    projectQuery.ExecSQL;
+    
+    ShowMessage('Yeni proje başarıyla kaydedildi.');
+    AddProjectPage.Close;
+  }
+  finally
+  {
+    projectQuery.Close;
+    projectQuery.Free;
+  }}
+}
+
+void OnAddEmployeeToListClick;
+var
+  employeeName, employeeID: String;
+{ 
+  if (employeeComboBox.ItemIndex > -1)
+  {
+    employeeName = employeeComboBox.Text;
+    employeeID = employeeComboBox.Items.Values[employeeName];
+    
+    // Çalışanın zaten ekli olup olmadığını hafızadaki listeden kontrol et
+    if (selectedEmployeeNames.IndexOf(employeeName) == -1)
+    {
+      // 1. Hafızadaki listelere ekle (Bu kısım zaten doğruydu)
+      selectedEmployeeNames.Add(employeeName);
+      selectedEmployeeIDs.Add(employeeID);
+      
+      // 2. Görseldeki Memo'ya yeni bir satır olarak ekle. Bu kadar.
+      selectedEmployeesMemo.Lines.Add(employeeName);
+    }
+    else
+    {
+      ShowMessage(employeeName + ' zaten listeye ekli.');
+    }
+    
+    employeeComboBox.ItemIndex = -1;
+  }
+}
+
+void OnSaveClick;
+{
+  if (projectNameEdit.Text == '')
+  {
+    ShowMessage('Lütfen zorunlu bir alan olan Proje Adı''nı doldurun.');
+  }
+  else
+  {
+    saveProjectAndEmployees;
+  }
+}
+
+void OnCancelClick;
+{
+  AddProjectPage.Close;
+}
+
+{
+  AddProjectPage = TclForm.Create(Self);
+  
+  // DOKÜMANTASYONA GÖRE DOĞRU OLUŞTURMA:
+  selectedEmployeeNames = Clomosy.StringListNew;
+  selectedEmployeeIDs = Clomosy.StringListNew;
+  
+  AddProjectPage.SetFormColor('#f8edd9', '', clGNone);
+  AddProjectPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  titlePanel = AddProjectPage.AddNewProPanel(AddProjectPage, 'titlePanel');
+  titlePanel.Align = alTop;
+  titlePanel.Height = 60;
+  titlePanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  titlePanel.SetclProSettings(titlePanel.clProSettings);
+
+  pageTitle = AddProjectPage.AddNewProLabel(titlePanel, 'pageTitle', 'Yeni Proje Oluştur');
+  pageTitle.Align = alClient;
+  pageTitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  pageTitle.clProSettings.FontSize = 24;
+  pageTitle.clProSettings.FontHorzAlign = palCenter;
+  pageTitle.clProSettings.FontVertAlign = palCenter;
+  pageTitle.SetclProSettings(pageTitle.clProSettings);
+  
+  buttonPanel = AddProjectPage.AddNewProPanel(AddProjectPage, 'buttonPanel');
+  buttonPanel.Align = alBottom;
+  buttonPanel.Height = 80;
+  buttonPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  buttonPanel.SetclProSettings(buttonPanel.clProSettings);
+  
+  formPanel = AddProjectPage.AddNewProPanel(AddProjectPage, 'formPanel');
+  formPanel.Align = alClient;
+  formPanel.Margins.Left = 20;
+  formPanel.Margins.Right = 20;
+  formPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  formPanel.SetclProSettings(formPanel.clProSettings);
+
+  projectNameLabel = AddProjectPage.AddNewProLabel(formPanel, 'projectNameLabel', 'Proje Adı*');
+  projectNameLabel.Align = alTop;
+  projectNameLabel.Margins.Top = 10;
+  projectNameEdit = AddProjectPage.AddNewProEdit(formPanel, 'projectNameEdit', '');
+  projectNameEdit.Align = alTop;
+  projectNameEdit.Height = 40;
+  projectNameEdit.Margins.Bottom = 15;
+
+  customerInfoLabel = AddProjectPage.AddNewProLabel(formPanel, 'customerInfoLabel', 'Müşteri Bilgileri');
+  customerInfoLabel.Align = alTop;
+  customerNameEdit = AddProjectPage.AddNewProEdit(formPanel, 'customerNameEdit', 'Müşteri Adı');
+  customerNameEdit.Align = alTop;
+  customerNameEdit.Height = 40;
+  customerNameEdit.Margins.Bottom = 5;
+
+  customerContactEdit = AddProjectPage.AddNewProEdit(formPanel, 'customerContactEdit', 'İletişim Bilgisi');
+  customerContactEdit.Align = alTop;
+  customerContactEdit.Height = 40;
+  customerContactEdit.Margins.Bottom = 15;
+
+  employeeSelectionLabel = AddProjectPage.AddNewProLabel(formPanel, 'employeeSelectionLabel', 'Proje Çalışanları');
+  employeeSelectionLabel.Align = alTop;
+  
+  employeeAddPanel = AddProjectPage.AddNewProPanel(formPanel, 'employeeAddPanel');
+  employeeAddPanel.Align = alTop;
+  employeeAddPanel.Height = 50;
+  employeeAddPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  employeeAddPanel.SetclProSettings(employeeAddPanel.clProSettings);
+
+  employeeComboBox = AddProjectPage.AddNewComboBox(employeeAddPanel, 'employeeComboBox');
+  employeeComboBox.Align = alLeft;
+  employeeComboBox.Width = 300;
+  
+  addEmployeeToListButton = AddProjectPage.AddNewProButton(employeeAddPanel, 'addEmployeeBtn', 'Ekle');
+  addEmployeeToListButton.Align = alLeft;
+  addEmployeeToListButton.Width = 80;
+  addEmployeeToListButton.Margins.Left = 10;
+  AddProjectPage.AddNewEvent(addEmployeeToListButton, tbeOnClick, 'OnAddEmployeeToListClick');
+  
+  // StringGrid yerine, basit bir Memo bileşeni oluşturuyoruz.
+  selectedEmployeesMemo = AddProjectPage.AddNewMemo(formPanel, 'selectedEmployeesMemo', '');
+  selectedEmployeesMemo.Align = alTop;
+  selectedEmployeesMemo.Height = 100;
+  selectedEmployeesMemo.Margins.Bottom = 15;
+  selectedEmployeesMemo.ReadOnly = True; // Kullanıcının içine yazı yazmasını engelle
+
+    
+
+  extraInfoLabel = AddProjectPage.AddNewProLabel(formPanel, 'extraInfoLabel', 'Ek Bilgiler ve Notlar');
+  extraInfoLabel.Align = alTop;
+  extraInfoMemo = AddProjectPage.AddNewMemo(formPanel, 'extraInfoMemo', '');
+  extraInfoMemo.Align = alClient;
+  
+  cancelButton = AddProjectPage.AddNewProButton(buttonPanel, 'cancelButton', 'İptal');
+  cancelButton.Align = alRight;
+  cancelButton.Width = 120;
+  cancelButton.Height = 45;
+  cancelButton.Margins.Right = 20;
+  cancelButton.Margins.Top = 15;
+  cancelButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#995f1e');
+  cancelButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#FFFFFF');
+  cancelButton.SetclProSettings(cancelButton.clProSettings);
+  AddProjectPage.AddNewEvent(cancelButton, tbeOnClick, 'OnCancelClick');
+
+  saveButton = AddProjectPage.AddNewProButton(buttonPanel, 'saveButton', 'Projeyi Kaydet');
+  saveButton.Align = alRight;
+  saveButton.Width = 150;
+  saveButton.Height = 45;
+  saveButton.Margins.Right = 10;
+  saveButton.Margins.Top = 15;
+  saveButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+  saveButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+  saveButton.SetclProSettings(saveButton.clProSettings);
+  AddProjectPage.AddNewEvent(saveButton, tbeOnClick, 'OnSaveClick');
+  
+  uAddComponent.addMenu(AddProjectPage, 'menuFrame', '');
+
+  setupDatabaseConnection;
+  loadEmployeesIntoComboBox;
+
+  AddProjectPage.Run;
+}

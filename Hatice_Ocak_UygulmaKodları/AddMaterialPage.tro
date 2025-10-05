@@ -1,0 +1,102 @@
+var
+  AddMaterialPage: TclForm;
+  titlePanel, formPanel: TclProPanel;
+  pageTitle, materialNameLabel, quantityLabel: TclProLabel;
+  materialNameEdit, quantityEdit: TclProEdit;
+  saveButton: TclProButton;
+
+// "Kaydet" butonuna tıklandığında çalışacak fonksiyon
+void OnSaveMaterialClick;
+{
+  // Başarılı bir kaydetme işlemi mesajı gösterilir
+  ShowMessage('Malzeme başarıyla eklendi!');
+  
+  // Kullanıcıyı bir önceki malzeme listesi sayfasına geri yönlendirir
+  Clomosy.RunUnit('MaterialPage'); 
+}
+
+{
+  // ANA SAYFA TASARIMI
+  AddMaterialPage = TclForm.Create(Self);
+  AddMaterialPage.SetFormColor('#f8edd9', '', clGNone);
+  AddMaterialPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  // SAYFA BAŞLIĞI PANELİ
+  titlePanel = AddMaterialPage.AddNewProPanel(AddMaterialPage, 'titlePanel');
+  titlePanel.Align = alTop;
+  titlePanel.Height = 60;
+  titlePanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  titlePanel.SetclProSettings(titlePanel.clProSettings);
+
+  // SAYFA BAŞLIĞI YAZISI
+  pageTitle = AddMaterialPage.AddNewProLabel(titlePanel, 'pageTitle', 'Malzeme Ekle');
+  pageTitle.Align = alClient;
+  pageTitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  pageTitle.clProSettings.FontSize = 24;
+  pageTitle.clProSettings.FontHorzAlign = palCenter;
+  pageTitle.clProSettings.FontVertAlign = palCenter;
+  pageTitle.SetclProSettings(pageTitle.clProSettings);
+  
+  // GİRİŞ ALANLARINI İÇEREN ANA PANEL
+  formPanel = AddMaterialPage.AddNewProPanel(AddMaterialPage, 'formPanel');
+  formPanel.Align = alClient;
+  formPanel.Margins.Left = 20;
+  formPanel.Margins.Right = 20;
+  formPanel.Margins.Bottom = 80; // Buton için boşluk
+  // Arka planla aynı renk yaparak paneli görünmez yap
+  formPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  formPanel.SetclProSettings(formPanel.clProSettings);
+
+
+  // Malzeme Adı Etiketi
+  materialNameLabel = AddMaterialPage.AddNewProLabel(formPanel, 'materialNameLabel', 'Malzeme Adı');
+  materialNameLabel.Align = alTop;
+  materialNameLabel.Margins.Top = 20;
+  materialNameLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  materialNameLabel.clProSettings.FontSize = 14;
+  materialNameLabel.SetclProSettings(materialNameLabel.clProSettings);
+
+  // Malzeme Adı Giriş Alanı
+  materialNameEdit = AddMaterialPage.AddNewProEdit(formPanel, 'materialNameEdit', '');
+  materialNameEdit.Align = alTop;
+  materialNameEdit.Height = 40;
+  materialNameEdit.Margins.Top = 5;
+  materialNameEdit.Margins.Bottom = 15;
+
+
+  // Miktar Etiketi
+  quantityLabel = AddMaterialPage.AddNewProLabel(formPanel, 'quantityLabel', 'Toplam Miktar');
+  quantityLabel.Align = alTop;
+  quantityLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  quantityLabel.clProSettings.FontSize = 14;
+  quantityLabel.SetclProSettings(quantityLabel.clProSettings);
+
+  // Miktar Giriş Alanı
+  quantityEdit = AddMaterialPage.AddNewProEdit(formPanel, 'quantityEdit', '');
+  quantityEdit.Align = alTop;
+  quantityEdit.Height = 40;
+  quantityEdit.Margins.Top = 5;
+
+
+  // KAYDET BUTONU
+  saveButton = AddMaterialPage.AddNewProButton(AddMaterialPage, 'saveButton', 'Kaydet');
+  saveButton.Align = alBottom;
+  saveButton.Height = 45;
+  saveButton.Margins.Bottom = 20; 
+  saveButton.Margins.Left = 50;
+  saveButton.Margins.Right = 50;
+  
+  // Buton Stil Ayarları
+  saveButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#4CAF50'); // Yeşil renk
+  saveButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#FFFFFF');
+  saveButton.clProSettings.FontHorzAlign = palCenter;
+  saveButton.clProSettings.FontSize = 16;
+  saveButton.clProSettings.IsRound = True;
+  saveButton.SetclProSettings(saveButton.clProSettings);
+  
+  // BUTON OLAYINI (EVENT) FORMA EKLEME
+  AddMaterialPage.AddNewEvent(saveButton, tbeOnClick, 'OnSaveMaterialClick');
+  
+  // Sayfayı Çalıştır
+  AddMaterialPage.Run;
+}

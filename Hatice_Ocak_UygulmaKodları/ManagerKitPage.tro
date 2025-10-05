@@ -1,0 +1,99 @@
+uses uAddComponent;
+var
+  MaterialPage: TclForm;
+  titlePanel: TclProPanel;
+  pageTitle: TclProLabel;
+  materialTable: TclStringGrid;
+  addMaterialButton: TclProButton;
+
+// "Malzeme Ekle" butonuna tıklandığında çalışacak fonksiyon
+void OnAddMaterialClick;
+{
+  // Yeni bir sayfaya (unit) geçiş yapılır.
+  Clomosy.RunUnit('AddMaterialPage');
+}
+
+// Tablo sütunlarının başlıklarını ve genişliklerini ayarlayan fonksiyon
+void SetupMaterialGridColumns;
+{
+   // Sadece sütun varsa bu işlemleri yap (hata önleme)
+   if (materialTable.ColumnCount > 0)
+   {
+     // 1. Sütun: Malzemenin Adı
+     materialTable.Columns[0].Header = 'Malzemenin Adı';
+     materialTable.Columns[0].Width = 350;
+
+     // 2. Sütun: Kullanılan Miktar
+     materialTable.Columns[1].Header = 'Kullanılan Miktar';
+     materialTable.Columns[1].Width = 150;
+
+     // 3. Sütun: Toplam Miktar
+     materialTable.Columns[2].Header = 'Toplam Miktar';
+     materialTable.Columns[2].Width = 150;
+   }
+}
+
+
+{
+  // ANA SAYFA TASARIMI
+  MaterialPage = TclForm.Create(Self);
+  MaterialPage.SetFormColor('#f8edd9', '', clGNone);
+  MaterialPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  // SAYFA BAŞLIĞI PANELİ
+  titlePanel = MaterialPage.AddNewProPanel(MaterialPage, 'titlePanel');
+  titlePanel.Align = alTop;
+  titlePanel.Height = 60;
+  titlePanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  titlePanel.SetclProSettings(titlePanel.clProSettings);
+
+  // SAYFA BAŞLIĞI YAZISI
+  pageTitle = MaterialPage.AddNewProLabel(titlePanel, 'pageTitle', 'Malzemeler');
+  pageTitle.Align = alClient;
+  pageTitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  pageTitle.clProSettings.FontSize = 24;
+  pageTitle.clProSettings.FontHorzAlign = palCenter;
+  pageTitle.clProSettings.FontVertAlign = palCenter;
+  pageTitle.SetclProSettings(pageTitle.clProSettings);
+
+  // MALZEME TABLOSU TASARIMI (Doğru Kullanım)
+  materialTable = MaterialPage.AddNewStringGrid(MaterialPage, 'materialTable');
+  materialTable.Align = alClient;
+  materialTable.ReadOnly = True; // Tablo sadece okunabilir olsun
+  materialTable.Margins.Top = 10;
+  materialTable.Margins.Left = 20;
+  materialTable.Margins.Right = 20;
+  materialTable.Margins.Bottom = 80;
+
+ 
+
+  // 2. Adım: Sütunların özelliklerini ayarla
+  SetupMaterialGridColumns();
+  
+  
+
+
+  // MALZEME EKLEME BUTONU
+  addMaterialButton = MaterialPage.AddNewProButton(MaterialPage, 'addMaterialButton', 'Malzeme Ekle');
+  addMaterialButton.Align = alBottom;
+  addMaterialButton.Height = 45;
+  addMaterialButton.Margins.Bottom = 20; 
+  addMaterialButton.Margins.Left = 50;
+  addMaterialButton.Margins.Right = 50;
+  
+  addMaterialButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+  addMaterialButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+  addMaterialButton.clProSettings.FontHorzAlign = palCenter;
+  addMaterialButton.clProSettings.FontSize = 16;
+  addMaterialButton.clProSettings.IsRound = True;
+  addMaterialButton.SetclProSettings(addMaterialButton.clProSettings);
+  
+  // BUTON OLAYINI FORMA EKLEME
+  MaterialPage.AddNewEvent(addMaterialButton, tbeOnClick, 'OnAddMaterialClick');
+  
+   // MENÜ
+  uAddComponent.addMenu(MaterialPage, 'menu', '');
+  
+  // Sayfayı Çalıştır
+  MaterialPage.Run;
+}

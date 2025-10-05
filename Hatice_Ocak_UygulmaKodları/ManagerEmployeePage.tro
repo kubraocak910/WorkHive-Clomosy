@@ -1,0 +1,91 @@
+uses uAddComponent;
+
+var
+  ManagerEmployeePage: TclForm;
+  searchEdit: TclProSearchEdit;
+  employeeListView: TclListView; // Bileşen Tipi TClListView olarak düzeltildi
+  EditEmployeeButton: TclProButton;
+  EditUnit: TclUnit;
+  selectedIDForEditing: String;
+  employeeQuery: TClSqlQuery;
+
+void setupDatabaseConnection
+{
+  try
+  {
+    Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+    employeeQuery.Connection = Clomosy.DBSQLServerConnection;
+  }
+  except
+  {
+    ShowMessage('Veritabanı bağlantısı kurulamadı: ' + LastExceptionMessage);
+  }}
+}
+
+void loadEmployeeData
+{
+  try
+  {
+    // Sizin bulduğunuz DOKÜMANTASYONA GÖRE takma adlar kullanıldı.
+    employeeQuery.SQL.Text = 'SELECT k.Ad + '' '' + k.Soyad AS MAIN_TEXT, ' +
+                             '''Maaş: '' + CAST(cp.maas AS NVARCHAR) AS SUB_TEXT, ' +
+                             '''Alan: '' + cp.calisanRolü AS SIDE_TEXT_CENTER, ' +
+                             '''Zam Tarihi: '' + CONVERT(NVARCHAR, cp.ZamTarihi, 104) AS FOOTER_TEXT, ' +
+                             'cp.PerformansID AS RECORD_GUID ' + // ID için özel alan
+                             'FROM CalisanPerformans cp INNER JOIN Kullanicilar k ON cp.CalisanID = k.KullaniciID';
+    employeeQuery.Open;
+    
+    if (employeeQuery.Found == True)
+    {
+      employeeListView.clLoadListViewDataFromDataset(employeeQuery);
+    }
+  }
+  finally
+  {
+    employeeQuery.Close;
+    employeeQuery.Free;
+  }}
+}
+
+
+
+void OnAddEmployeeClick;
+{
+  Clomosy.RunUnit('EditEmployeePage');
+}
+
+{
+  ManagerEmployeePage = TclForm.Create(Self);
+  EditUnit = TclUnit.Create;
+  
+  ManagerEmployeePage.SetFormColor('#f8edd9', '', clGNone);
+  ManagerEmployeePage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+
+  EditEmployeeButton = ManagerEmployeePage.AddNewProButton(ManagerEmployeePage, 'EditEmployeeButton', 'Düzenle ');
+  EditEmployeeButton.Align = alBottom;
+  EditEmployeeButton.Height = 45;
+  EditEmployeeButton.Margins.Bottom = 20; 
+  EditEmployeeButton.Margins.Left = 50;
+  EditEmployeeButton.Margins.Right = 50;
+  EditEmployeeButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+  EditEmployeeButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+  EditEmployeeButton.clProSettings.IsRound = True;
+  EditEmployeeButton.SetclProSettings(EditEmployeeButton.clProSettings);
+  ManagerEmployeePage.AddNewEvent(EditEmployeeButton, tbeOnClick, 'OnAddEmployeeClick');
+
+  // ProListView yerine, dokümantasyonunu bulduğunuz temel TClListView kullanılıyor.
+  employeeListView = ManagerEmployeePage.AddNewListView(ManagerEmployeePage, 'employeeListView');
+  employeeListView.Align = alClient;
+  
+  // DesignerPanel bu bileşende kullanılmadığı için ilgili tüm kodlar kaldırıldı.
+
+ 
+  
+  employeeQuery = TClSqlQuery.Create(nil);
+  setupDatabaseConnection;
+  loadEmployeeData;
+  
+  uAddComponent.addMenu(ManagerEmployeePage, 'menuFrame', '');
+  ManagerEmployeePage.Run;
+}

@@ -1,0 +1,73 @@
+uses uAddComponent;
+var
+  ManagerProfilPage: TclForm;
+  profileCardPanel: TclProPanel;
+  cardTitleLabel, nameLabel, emailLabel: TclProLabel;
+  profileImage: TclProImage;
+
+{
+  // ANA SAYFA TASARIMI
+  ManagerProfilPage = TclForm.Create(Self);
+  ManagerProfilPage.SetFormColor('#f8edd9', '', clGNone);
+  ManagerProfilPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+
+  // BİLGİLERİ GÖSTERECEK ANA KART PANELİ
+  profileCardPanel = ManagerProfilPage.AddNewProPanel(ManagerProfilPage, 'profileCardPanel');
+  profileCardPanel.Align = alCenter; 
+  profileCardPanel.Width = 400;  // Kartın genişliği
+  profileCardPanel.Height = 200; // Kartın yüksekliği
+  profileCardPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FFFFFF'); // Temiz bir beyaz
+  profileCardPanel.clProSettings.IsRound = True;
+  profileCardPanel.clProSettings.RoundHeight = 20; // Köşeleri yuvarlat
+  profileCardPanel.clProSettings.RoundWidth = 20;
+  profileCardPanel.clProSettings.BorderColor = clAlphaColor.clHexToColor('#EAEAEA');
+  profileCardPanel.clProSettings.BorderWidth = 1;
+  profileCardPanel.SetclProSettings(profileCardPanel.clProSettings);
+
+
+  // KART BAŞLIĞI
+  cardTitleLabel = ManagerProfilPage.AddNewProLabel(profileCardPanel, 'cardTitleLabel', 'Profil Bilgileri');
+  cardTitleLabel.Align = alTop;
+  cardTitleLabel.Margins.Top =20;
+  cardTitleLabel.Height = 60;
+  cardTitleLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  cardTitleLabel.clProSettings.FontSize = 22;
+  cardTitleLabel.clProSettings.TextSettings.Font.Style = [fsBold];
+  cardTitleLabel.clProSettings.FontHorzAlign = palCenter;
+  cardTitleLabel.SetclProSettings(cardTitleLabel.clProSettings);
+  
+  
+  profileImage = ManagerProfilPage.AddNewProImage(profileCardPanel, 'profileImage');
+  profileImage.Align=alnone;
+  profileImage.SetBounds(30, 80, 80, 80); 
+  profileImage.clProSettings.IsRound = True; 
+  profileImage.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/08/XixnDG.png';
+  profileImage.SetclProSettings(profileImage.clProSettings);
+
+  
+
+  // AD SOYAD BİLGİSİ
+  nameLabel = ManagerProfilPage.AddNewProLabel(profileCardPanel, 'nameLabel', 'Ahmet Yılmaz');
+  nameLabel.Align=alNone;
+  nameLabel.SetBounds(130, 95, 240, 30); // Fotoğrafın sağına konumlandır
+  nameLabel.clProSettings.FontSize = 20;
+  nameLabel.clProSettings.TextSettings.Font.Style = [fsBold];
+  nameLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a'); // Koyu ve okunaklı
+  nameLabel.clProSettings.FontVertAlign = palCenter;
+  nameLabel.SetclProSettings(nameLabel.clProSettings);
+
+  // E-POSTA ADRESİ
+  emailLabel = ManagerProfilPage.AddNewProLabel(profileCardPanel, 'emailLabel', 'ahmet.yilmaz@example.com');
+  emailLabel.Align=alNone;
+  emailLabel.SetBounds(130, 125, 240, 20); // Ad soyadın altına konumlandır
+  emailLabel.clProSettings.FontSize = 14;
+  emailLabel.clProSettings.FontColor = clAlphaColor.clHexToColor('#7f8c8d'); // Daha soluk bir renk
+  emailLabel.clProSettings.FontVertAlign = palCenter;
+  emailLabel.SetclProSettings(emailLabel.clProSettings);
+  
+   uAddComponent.addMenu(ManagerProfilPage, 'menuFrame', '');
+
+  
+  // Sayfayı Çalıştır
+  ManagerProfilPage.Run;
+}

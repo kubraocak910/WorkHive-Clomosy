@@ -1,0 +1,80 @@
+uses uAddComponent;
+
+var 
+addTaskPopup:TclForm;
+taskDescEdit,assignedPersonEdit:TClProDateEdit;
+dueDateEdit:TClProDateEdit;
+confirmButton,cancelButton:TClProButton;
+
+void OnConfirmAddTaskClick;
+{
+ShowMessage('Görev Eklendi');
+Clomosy.Rununit('ManagerTaskPage');
+}
+
+// Popup'taki "İptal" butonuna basıldığında çalışır
+void OnCancelAddTaskClick;
+{
+ Clomosy.Rununit('ManagerTaskPage'); 
+}
+
+{
+//--- GÖREV EKLEME POPUP TASARIMI ---
+  addTaskPopup = TclForm.Create(Self);
+  addTaskPopup.SetFormColor('#f8edd9', '', clGNone);
+
+  // Görev Tanımı Giriş Alanı
+  uAddComponent.AddLeftSmallText(addTaskPopup,addTaskPopup,'task', 'Görev Tanımı');
+  taskDescEdit = addTaskPopup.AddNewProEdit(addTaskPopup, 'taskDescEdit', '');
+  taskDescEdit.Align=alTop;
+  taskDescEdit.Margins.Top=10;
+  taskDescEdit.Margins.Bottom=10;
+  
+
+  // İlgili Kişi Giriş Alanı
+
+  uAddComponent.AddLeftSmallText(addTaskPopup,addTaskPopup,'person', 'Sorumlu Kişi');
+  assignedPersonEdit = addTaskPopup.AddNewProEdit(addTaskPopup, 'assignedPersonEdit', '');
+  assignedPersonEdit.Align=altop;
+  assignedPersonEdit.Margins.Top=10;
+  assignedPersonEdit.Margins.Bottom=10;
+  
+
+  // Son Tarih Seçici
+  uAddComponent.AddLeftSmallText(addTaskPopup,addTaskPopup,'Date', 'Son Tarih');
+  dueDateEdit = addTaskPopup.AddNewProEdit(addTaskPopup, 'dueDateEdit', '');
+  dueDateEdit.Align=altop;
+  dueDateEdit.Margins.Top=10;
+  dueDateEdit.Margins.Bottom=10;
+  dueDateEdit.Width = 360;
+
+  // Onayla Butonu
+  confirmButton = addTaskPopup.AddNewProButton(addTaskPopup, 'confirmButton', 'Onayla');
+  confirmButton.Align=alNone;
+  confirmButton.SetBounds(80, 280,100, 40);
+  confirmButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#4CAF50'); // Yeşil renk
+  confirmButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#FFFFFF');
+  confirmButton.clProSettings.IsRound = True;
+  confirmButton.SetclProSettings(confirmButton.clProSettings);
+
+  // İptal Butonu
+  cancelButton = addTaskPopup.AddNewProButton(addTaskPopup, 'cancelButton', 'İptal');
+  cancelButton.Align=alNone;
+  cancelButton.SetBounds(220, 280, 100, 40);
+  cancelButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f44336'); // Kırmızı renk
+  cancelButton.clProSettings.FontColor = clAlphaColor.clHexToColor('#FFFFFF');
+  cancelButton.clProSettings.IsRound = True;
+  cancelButton.SetclProSettings(cancelButton.clProSettings);
+
+  // Popup butonlarına olayları (event) ata
+  addTaskPopup.AddNewEvent(confirmButton, tbeOnClick, 'OnConfirmAddTaskClick');
+  addTaskPopup.AddNewEvent(cancelButton, tbeOnClick, 'OnCancelAddTaskClick');
+  
+  // Alanları temizle ve popup'ı göster
+  
+  //addTaskPopup.ShowModal;
+  
+  addTaskPopup.Run;
+  
+  
+  }

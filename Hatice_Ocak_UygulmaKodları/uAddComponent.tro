@@ -1,0 +1,444 @@
+
+// Login ekranın mail ve password alan editler
+  function AddProEdit(uForm,uLabel, uEdit, uCaption): TclProEdit;
+  var
+      editLogin:TclProEdit;
+    {
+      editLogin=uForm.AddNewProEdit(uLabel, uEdit, uCaption);
+      editLogin.height=30;
+      editLogin.align=alTop;
+      editLogin.margins.bottom = 10;
+      editLogin.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('ac9576');
+      editLogin.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+      editLogin.clProSettings.FontHorzAlign = palcenter;
+      editLogin.clProSettings.IsRound = True;
+      editLogin.SetclProSettings(editLogin.clProSettings);
+      
+      
+      
+      Result = editLogin;
+    }
+
+// BUTON
+  function AddNewButton(uForm,uLabel, uButton, uCaption): TClProButton;
+  var
+    button1 :TClProButton;
+    {
+      button1=uForm.AddNewProButton(uLabel, uButton, uCaption);
+      button1.align=alTop;
+      button1.height=30;
+      Button1.Width = 150;	
+      button1.margins.bottom = 10;
+      button1.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+      button1.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+      button1.clProSettings.FontHorzAlign = palcenter;
+      button1.clProSettings.IsRound = True;
+      button1.SetclProSettings(button1.clProSettings);
+    }
+
+// Küçük Yazılar
+  function AddLeftSmallText(uForm,uLabel,uLabeltext, uCaption): TClProLabel;
+  var
+    label1:TClProLabel;
+    {
+      label1=uForm.AddNewProLabel(uLabel,uLabeltext, uCaption);
+      label1.align= alTop;
+      label1.margins.bottom =10;
+      label1.clProSettings.FontHorzAlign = palLeading;
+      label1.clProSettings.FontSize = 10;
+      label1.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+      label1.SetclProSettings(label1.clProSettings);
+    }
+  
+// MENU 
+  void GoToManagerMainPage
+    {
+      Clomosy.RunUnit('ManagerMainPage');
+    } 
+  void GoToManagerProjectPage
+    {
+      Clomosy.RunUnit('ManagerProjectPage');
+    }
+  void GoToManagerAddProjectPage
+    {
+      Clomosy.RunUnit('AddProjectPage');
+    }
+  void GoToManagerEmployeePage
+    {
+      Clomosy.RunUnit('ManagerEmployeePage');
+    }
+  void GoToManagerProfilPage
+    {
+      Clomosy.RunUnit('ManagerProfilPage');
+    }
+  function AddMenu(uForm,ulabelMenu,uCaption);
+  var
+    labelmenu  : TClProLabel;
+    buttonMainPage ,buttonProjectPage,buttonAddProjectPage, buttonEmployeePage,buttonProfilePage : TClProButton;
+    
+    {
+      // BUTONLARIN GÖRÜNECEĞİ LABEL
+        labelmenu=uForm.AddNewProLabel(uForm,ulabelMenu, uCaption);
+        labelmenu.align=alMostBottom;
+        labelmenu.margins.bottom=10;// alttaki çizgi ile karıştığı için azıcıkyukarı aldım 
+        labelmenu.height=70;
+        labelmenu.clProSettings.BackgroundColor= clAlphaColor.clHexToColor('#eca514');
+        labelmenu.clProSettings.IsRound=True;
+        labelmenu.SetclProSettings(labelmenu.clProSettings);
+        
+      // MAİN SAYFASINA YÖNLENDİREN BUTON 
+        buttonMainPage = uForm.AddNewProButton(labelmenu, 'buttonMainPage', '');
+        buttonMainPage.align=alLeft;
+        buttonMainPage.margins.left = 35;
+        buttonMainPage.Width=50;
+        buttonMainPage.clProSettings.PictureAutoFit = True;
+        buttonMainPage.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/19/XLwZli.png';
+        buttonMainPage.SetclProSettings(buttonMainPage.clProSettings);
+        uForm.AddNewEvent(buttonMainPage,tbeOnClick,'GoToManagerMainPage');
+      
+      // PROJE SAYFASINA YÖNLENDİREN BUTON
+        buttonProjectPage = uForm.AddNewProButton(labelmenu, 'buttonProjectPage', '');
+        buttonProjectPage.align=alLeft;
+        buttonProjectPage.margins.left = 20;
+        buttonProjectPage.Width=50;
+        buttonProjectPage.clProSettings.PictureAutoFit = True;
+        buttonProjectPage.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/19/XLwJnT.png';
+        buttonProjectPage.SetclProSettings(buttonProjectPage.clProSettings);
+        uForm.AddNewEvent(buttonProjectPage,tbeOnClick,'GoToManagerProjectPage');
+      
+      // PROJE EKLEME SAYFASINA YÖNLENDİREN BUTON
+        buttonAddProjectPage = uForm.AddNewProButton(labelmenu, 'buttonAddProjectPage', '');
+        buttonAddProjectPage.align=alCenter;
+        buttonAddProjectPage.margins.left = 10;
+        buttonAddProjectPage.margins.right = 10;
+        buttonAddProjectPage.Width=50;
+        buttonAddProjectPage.clProSettings.PictureAutoFit = True;
+        buttonAddProjectPage.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/19/XLClSx.png';
+        buttonAddProjectPage.SetclProSettings(buttonAddProjectPage.clProSettings);
+        uForm.AddNewEvent(buttonAddProjectPage,tbeOnClick,'GoToManagerAddProjectPage');
+      
+      // PROFİL SAYFASINA YÖNLENDİREN BUTON
+        buttonProfilePage = uForm.AddNewProButton(labelmenu, 'buttonProfilePage', '');
+        buttonProfilePage.align=alRight;
+        buttonProfilePage.margins.right= 35;
+        buttonProfilePage.Width=50;
+        buttonProfilePage.clProSettings.PictureAutoFit = True;
+        buttonProfilePage.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/19/XLEzmH.png';
+        buttonProfilePage.SetclProSettings(buttonProfilePage.clProSettings);
+        uForm.AddNewEvent(buttonProfilePage,tbeOnClick,'GoToManagerProfilPage');
+      
+      // PERSONEL BİLGİ SAYFASINA YÖNLENDİREN BUTON
+        buttonEmployeePage = uForm.AddNewProButton(labelmenu, 'buttonEmployeePage', '');
+        buttonEmployeePage.align=alRight;
+        buttonEmployeePage.margins.right = 20;
+        buttonEmployeePage.Width=50;
+        buttonEmployeePage.clProSettings.PictureAutoFit = True;
+        buttonEmployeePage.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/19/XLEL6W.png';
+        buttonEmployeePage.SetclProSettings(buttonEmployeePage.clProSettings);
+        uForm.AddNewEvent(buttonEmployeePage,tbeOnClick,'GoToManagerEmployeePage');
+    }
+  
+// SAYFA BAŞLIĞI 
+  function AddTitle (uForm,labelName,pageName2)
+  var
+    labeltitle : TClProLabel;
+    {
+      labeltitle=uForm.AddNewProLabel(uForm,labelName,pageName2);
+      labeltitle.align=alTop;
+      //labeltitle.align=alHorzCenter;
+      labeltitle.margins.top=20;
+      labeltitle.margins.bottom=20;
+      labeltitle.width=200;
+      labeltitle.height=50;
+      labeltitle.clProSettings.FontHorzAlign = palCenter;
+      labeltitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+      labeltitle.clProSettings.FontSize=28;
+      labeltitle.clProSettings.TextSettings.Font.Style=[fsBold]
+      labeltitle.SetclProSettings(labeltitle.clProSettings);
+      
+    }
+  
+// PROLİSTVİEW YAN YAZI (BİR TIK DAHA BÜYük)
+  function AddLeftBigText(uForm,uLabel,uLabeltext, uCaption): TClProLabel;
+  var
+    labelBigText:TClProLabel;
+    {
+      labelBigText=uForm.AddNewProLabel(uLabel,uLabeltext, uCaption);
+      labelBigText.align= alTop;
+      labelBigText.margins.bottom =10;
+      labelBigText.margins.left=10;
+      labelBigText.clProSettings.FontHorzAlign = palLeading;
+      labelBigText.clProSettings.FontSize = 20;
+      labelBigText.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+      labelBigText.SetclProSettings(labelBigText.clProSettings);
+    }
+
+// PROLİSTVİEW ColCount 1
+  function AddProListView1 (uform,listVname)
+  var
+    listV:TCLProListView;
+    {
+      listV=uForm.AddNewProListView(uForm, listVname);
+      listV.align = alTop;
+      listV.height= 150;
+      listV.margins.bottom=10;
+      listV.margins.top=10;
+      listV.margins.left=10;
+      listV.margins.right=10;
+      listV.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+      listV.clProSettings.BorderColor = clAlphaColor.clHexToColor('#995f1e');
+      listV.clProSettings.BorderWidth = 1;
+      listV.clProSettings.IsRound = True; 
+      listV.clProSettings.ItemWidth = 200;
+      listV.clProSettings.ItemHeight = 20;
+      listV.clProSettings.ColCount = 1;
+      listV.clProSettings.ItemSpace = 10;
+      listV.SetclProSettings(listV.clProSettings);
+    }
+    
+// PROLİSTVİEW ColCount 2
+
+      void GoToManagerInfoProjectPage
+      {
+        Clomosy.RunUnit('ManagerInfoProjectPage')
+      }
+      function AddProListView2 (uform,plistname)
+      var
+        plist:TCLProListView;
+        dlist:TClProListViewDesignerPanel;
+        title:TClProButton;
+        {
+          plist=uForm.AddNewProListView(uForm, plistname);
+          plist.align=alTop
+          plist.height=220;
+          plist.width=200;
+          plist.margins.bottom=10;
+          plist.margins.top=10;
+          plist.margins.left=10;
+          plist.margins.right=10;
+          plist.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#995f1e');
+          plist.clProSettings.IsRound = True; 
+          plist.clProSettings.ViewType = lvWaterFall;
+          plist.clProSettings.ItemWidth =200;
+          plist.clProSettings.ItemHeight = 200;
+          plist.clProSettings.ColCount = 2;
+          plist.clProSettings.ItemSpace = 10;
+          plist.SetclProSettings(plist.clProSettings);
+          
+          
+          dlist=uForm.AddNewProListViewDesignerPanel(plist, 'dlist');
+          dlist.clProSettings.IsRound = True; 
+          dlist.clProSettings.RoundHeight = 32;
+          dlist.clProSettings.RoundWidth = 32;
+          dlist.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+          dlist.SetclProSettings(dlist.clProSettings);
+          plist.SetDesignerPanel(dlist);
+          
+          
+          title =uForm.AddNewProButton(dlist, 'title', '');
+          title.Align = alCenter;
+          //title.Align = alTop;
+          //title.Margins.Top = 50;
+          //title.Margins.Left = 10;
+          //title.Margins.Right = 10;
+          title.clProSettings.WordWrap = True;
+          title.clProSettings.AutoSize = True;
+          title.clProSettings.TextSettings.Font.Style = [fsBold];
+          title.clProSettings.FontSize =20;
+          title.clProSettings.FontColor=clAlphaColor.clHexToColor('#1a141a');
+          title.SetclProSettings(title.clProSettings);
+          dlist.AddPanelObject(title, clCaption);
+          
+    
+      
+         // paneldeki yazı 
+         plist.clLoadProListViewDataFromDataset(Clomosy.ClDataSetFromJSON('[
+         {"title" : "Proje 1"},
+         {"title":"Proje2"}]'));
+         
+         uForm.AddNewEvent(title,tbeOnClick,'GoToManagerInfoProjectPage');
+        }
+    
+// PROLİSTVİEW ColCount 23
+  function AddProListView23 (uform,plistname)
+  var
+    plist:TCLProListView;
+    dlist:TClProListViewDesignerPanel;
+    title1:TClProButton;
+    {
+      plist=uForm.AddNewProListView(uForm, plistname);
+      plist.align=alTop
+      plist.height=220;
+      plist.width=200;
+      plist.margins.bottom=10;
+      plist.margins.top=10;
+      plist.margins.left=10;
+      plist.margins.right=10;
+      plist.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#995f1e');
+      plist.clProSettings.IsRound = True; 
+      plist.clProSettings.ViewType = lvWaterFall;
+      plist.clProSettings.ItemWidth =200;
+      plist.clProSettings.ItemHeight = 200;
+      plist.clProSettings.ColCount = 2;
+      plist.clProSettings.ItemSpace = 10;
+      plist.SetclProSettings(plist.clProSettings);
+      
+      
+      dlist=uForm.AddNewProListViewDesignerPanel(plist, 'dlist');
+      dlist.clProSettings.IsRound = True; 
+      dlist.clProSettings.RoundHeight = 32;
+      dlist.clProSettings.RoundWidth = 32;
+      dlist.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+      dlist.SetclProSettings(dlist.clProSettings);
+      plist.SetDesignerPanel(dlist);
+      
+      
+      title1 =uForm.AddNewProButton(dlist, 'title1', '');
+      title1.Align = alCenter;
+      //title.Align = alTop;
+      //title.Margins.Top = 50;
+      //title.Margins.Left = 10;
+      //title.Margins.Right = 10;
+      title1.clProSettings.WordWrap = True;
+      title1.clProSettings.AutoSize = True;
+      title1.clProSettings.TextSettings.Font.Style = [fsBold];
+      title1.clProSettings.FontSize =20;
+      title1.clProSettings.FontColor=clAlphaColor.clHexToColor('#1a141a');
+      title1.SetclProSettings(title1.clProSettings);
+      dlist.AddPanelObject(title1, clCaption);
+      
+
+  
+     // paneldeki yazı 
+     plist.clLoadProListViewDataFromDataset(Clomosy.ClDataSetFromJSON('[
+     {"title1" : "Proje 1"},
+     {"title1":"Proje2"}]'));
+    }
+    
+// BUTON VE PANEL
+  void GoToChoiceParametre(x:String)
+    {
+      case x of
+      {
+          'Görevler': Clomosy.RunUnit('ManagerTaskPage');
+          'Malzemeler': ShowMessage('Good job!');
+          
+      }
+    }
+  
+    void GoToChoice
+    var 
+     parametre : String;
+     
+      {
+      parametre ='Görevler';
+      //parametre = TclProButton(uForm.Clsender).clTagString;
+      GoToChoiceParametre(parametre); // ayrı fonksiyona yönlendir
+      }
+    
+    
+    function AddPanelButton (uForm,panelButtonname,panelButtonalign,butonname)
+      var
+      panelButton :TclProPanel;
+      buttonp :TClProButton;
+      {
+        panelButton = uForm.AddNewProPanel(uForm,panelButtonname);
+        panelButton.Align=alTop;
+        panelButton.Align=panelButtonalign;
+        panelButton.height=50;
+        panelButton.width=190;
+        panelButton.Margins.top=10;
+        panelButton.Margins.bottom=10;
+        panelButton.margins.Left=10;
+        panelButton.margins.Right=10;
+      
+        panelButton.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#995f1e');
+        panelButton.SetclProSettings(panelButton.clProSettings);
+        
+        buttonp=uForm.AddNewProButton(panelButton, butonname ,butonname);
+        buttonp.Align=alCenter;
+        buttonp.clProSettings.FontColor = clAlphaColor.clHexToColor('#dbbe8d');
+        buttonp.SetclProSettings(buttonp.clProSettings);
+        //buttonp.clTagString = parametre;
+        
+        uForm.AddNewEvent(buttonp,tbeOnClick,'GoToChoice');
+        
+        
+      }
+      
+// GÖREV SAYFASI TODAY TAMAMLANA VE PLANLANAN
+    void GoToToday
+    {
+      Clomosy.RunUnit('ManagerTodayTaskPage');
+    }
+    
+    void GoToPlanned
+    {
+      Clomosy.RunUnit('ManagerPlannedTaskPage');
+    }
+    
+    void GoToCompleted
+    {
+      Clomosy.RunUnit('ManagerCompletedTaskPage');
+    }
+    
+    function  AddTaskPanel(uForm,panelTaskName)
+    var
+    panelTask :TclProPanel;
+    buttonToday, buttonPlanned, buttonCompleted: TClProButton
+    { 
+    // BUTONALRIN OLDUĞU PANEL
+      panelTask = uForm.AddNewProPanel(uForm,panelTaskName);
+      panelTask.Align=altop;
+      panelTask.Height = 50;
+      panelTask.Width=200;
+      panelTask.clProSettings.BackgroundColor=clAlphaColor.clHexToColor('#f8edd9');
+    
+    // TODAY BUTONU 
+      
+      buttonToday=uForm.AddNewProButton(panelTask, 'buttonToday', 'Today');
+      buttonToday.Align=alleft;
+      buttonToday.margins.left = 36;
+      buttonToday.Width=100;
+      buttonToday.clProSettings.FontSize = 32 ;
+      buttonToday.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+      buttonToday.clProSettings.FontHorzAlign = palCenter;
+      buttonToday.clProSettings.BackgroundColor=clAlphaColor.clHexToColor('#dbbe8d');
+      buttonToday.SetclProSettings(buttonToday.clProSettings);
+      
+      uForm.AddNewEvent(buttonToday,tbeOnClick,'GoToToday');
+      
+
+      
+      
+      
+      
+    }
+    
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

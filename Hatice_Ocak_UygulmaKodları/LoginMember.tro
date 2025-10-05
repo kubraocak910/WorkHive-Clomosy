@@ -1,0 +1,168 @@
+uses uAddComponent;
+
+var 
+  LoginPage : TclForm ;
+  labelLogin ,labelWelcome,labelMail,LabelPassword : TClProLabel;
+  imageLogo : TClProImage;
+  editMail , editPasswords: TclProEdit ;
+  buttonLogin,buttonSingup,buttonForget : TClProButton;
+  // Sorgu nesnesini global olarak tanımlamak yerine fonksiyon içinde oluşturmak daha iyi bir pratiktir.
+  // lInsertQ : TClSqlQuery ; 
+void showPassword
+{
+  
+  editPasswords.Password = not editPasswords.Password;	
+}
+void GoToSignupPage
+{
+  Clomosy.RunUnit('SingupPage');
+}
+  
+
+void checkLogin
+var
+  loginQuery: TClSqlQuery;
+  userEmail, userPassword, userRole: String;
+{
+  loginQuery = TClSqlQuery.Create(nil);
+
+  try
+  {
+    
+    Clomosy.DBSQLServerConnect('SQL Server','192.168.1.105','WorkHive','Hk795104199','WorkHiveDB',1433);
+    loginQuery.Connection = Clomosy.DBSQLServerConnection;
+    
+    // --- ADIM 1: KULLANICIYI E-POSTA ADRESİNE GÖRE BUL ---
+    // Sadece e-posta ile arama yapıyoruz. Bu daha güvenlidir.
+    // NOT: Veritabanı sütun adlarınızın 'Eposta' ve 'SifreHash' olduğundan emin olun.
+    loginQuery.Sql.Text = 'SELECT * FROM kullanicilar WHERE Eposta = ''' + editMail.Text + '''';
+    loginQuery.Open;
+    
+    // --- ADIM 2: KULLANICI VAR MI KONTROL ET ---
+    if (loginQuery.Eof) // Eof ise (yani dosyanın sonundaysa) kayıt bulunamamıştır.
+    {
+      ShowMessage('Bu e-posta adresine sahip bir kullanıcı bulunamadı!');
+    }
+    else // Kullanıcı bulundu, şimdi şifreyi kontrol et.
+    {
+      // Veritabanından şifre ve rol bilgilerini al.
+      userPassword = loginQuery.FieldByName('SifreHash').AsString;
+      userRole = loginQuery.FieldByName('Rol').AsString;
+      
+      // --- ADIM 3: ŞİFRE DOĞRU MU KONTROL ET ---
+      if (userPassword == editPasswords.Text)
+      {
+        // Giriş başarılı!
+        ShowMessage('Giriş başarılı! Yönlendiriliyorsunuz...');
+        
+    
+        if (userRole == 'employer') 
+        {
+          Clomosy.RunUnit('ManagerMainPage');
+        }
+        else if (userRole == 'employee') 
+        {
+          Clomosy.RunUnit('employeeMainPage');
+        }
+        else
+        {
+          ShowMessage('Kullanıcı rolü geçersiz. Lütfen yönetici ile iletişime geçin.');
+        }
+      }
+      else // Şifre yanlış.
+      {
+        ShowMessage('Şifre hatalı! Lütfen tekrar deneyin.');
+      }
+    }
+  }
+  finally
+  {
+    // İşlem bittiğinde sorgu nesnesini hafızadan temizle.
+    loginQuery.Close;
+    loginQuery.Free;
+  }}
+}
+
+// =================================================================
+// Ana Kod (Arayüz Tasarımı)
+// =================================================================
+{
+  // LOGİN SAYFASI OLUŞTURMA VE ARKA PLAN TASARIMI
+  LoginPage =TclForm.Create(self);
+  LoginPage.SetFormColor('#f8edd9','',clGNone);
+  LoginPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+  
+  // HOŞGELDİNİZ YAZISI
+  labelWelcome=LoginPage.AddNewProLabel(LoginPage, 'labelWelcome', 'Hoşgeldiniz');
+  labelWelcome.align=alTop;
+  labelWelcome.margins.left=20;
+  labelWelcome.margins.top=38;
+  labelWelcome.width=200;
+  labelWelcome.height=60;
+  labelWelcome.clProSettings.FontHorzAlign = palLeading;
+  labelWelcome.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  labelWelcome.clProSettings.FontSize=40;
+  labelWelcome.clProSettings.TextSettings.Font.Style=[fsBold];
+  labelWelcome.SetclProSettings(labelWelcome.clProSettings);
+  
+  // BİLEŞENLERİN BAĞLI OLDUĞU LABEL 
+  labelLogin=LoginPage.AddNewProLabel(LoginPage, 'labelLogin',' '); // ProImage yerine ProLabel kullandım, daha esnek olabilir.
+  labelLogin.width=200;
+  labelLogin.height= 600;
+  labelLogin.margins.left =100;
+  labelLogin.margins.right=100;
+  labelLogin.align=alCenter;
+  labelLogin.align=alVertCenter;
+    
+  // LOGO
+  imageLogo=LoginPage.AddNewProImage(labelLogin, 'imagelogo');
+  imageLogo.height=200;
+  imageLogo.width=200;
+  imageLogo.align =alMostTop;
+  imageLogo.margins.bottom = 0;
+  imageLogo.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/13/XQeOJ6.png';
+  imageLogo.SetclProSettings(imageLogo.clProSettings);
+   
+  // KULLANICI GİRİŞİ 
+  editMail=uAddComponent.AddProEdit(LoginPage,labelLogin , 'editMail', 'Mail Adresi');
+    
+  // ŞİFRE GİRİŞİ
+  editPasswords=uAddComponent.AddProEdit(LoginPage,labelLogin , 'editPasswords', 'Şifre');
+  editPasswords.Password = True;	
+   
+  // ŞİFREYİ GÖSTER BUTONU
+  buttonForget = LoginPage.AddNewProButton(labelLogin, 'buttonForget', 'Şifreyi Göster/Gizle');
+  buttonForget.align= alTop;
+  buttonForget.margins.bottom = 10;
+  buttonForget.clProSettings.FontHorzAlign = palLeading;
+  buttonForget.clProSettings.FontSize = 10;
+  buttonForget.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  buttonForget.SetclProSettings(buttonForget.clProSettings);
+  LoginPage.AddNewEvent(buttonForget,tbeOnClick,'showPassword');
+    
+  // LOGİN BUTONU
+  buttonLogin=LoginPage.AddNewProButton(labelLogin, 'buttonLogin', 'Log in');
+  buttonLogin.align=alTop;
+  buttonLogin.height=30;
+  buttonLogin.Width = 150;	
+  buttonLogin.margins.bottom = 10;
+  buttonLogin.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#fec42d');
+  buttonLogin.clProSettings.FontColor = clAlphaColor.clHexToColor('#1a141a');
+  buttonLogin.clProSettings.FontHorzAlign = palcenter;
+  buttonLogin.clProSettings.IsRound = True;
+  buttonLogin.SetclProSettings(buttonLogin.clProSettings);
+  // Butonun tıklanma olayını YENİ fonksiyonumuza bağlıyoruz.
+  LoginPage.AddNewEvent(buttonLogin,tbeOnClick,'checkLogin');
+    
+  // SİNGUP BUTONU
+  buttonSingup = LoginPage.AddNewProButton(labelLogin, 'buttonSingup', 'Henüz üye değil misiniz ?');
+  buttonSingup.align= alTop;
+  buttonSingup.margins.bottom = 10;
+  buttonSingup.clProSettings.FontHorzAlign = palCenter;
+  buttonSingup.clProSettings.FontSize = 12;
+  buttonSingup.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  buttonSingup.SetclProSettings(buttonSingup.clProSettings);
+  LoginPage.AddNewEvent(buttonSingup,tbeOnClick,'GoToSignupPage');
+    
+  LoginPage.Run;
+}

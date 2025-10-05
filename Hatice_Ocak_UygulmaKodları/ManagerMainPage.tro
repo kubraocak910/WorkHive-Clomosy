@@ -1,0 +1,110 @@
+uses uAddComponent;
+var 
+ManagerMainPage : TclForm;
+labelmenuFrame,labelUp, labelwelcome , labelCompletedTask ,labelKit :TClProLabel;
+buttonNotification:TClProButton ;
+listVCompletedTask,listVKit : TClProListView;
+
+void GoToManagerNotification
+  {
+    Clomosy.RunUnit('ManagerNotificationPage');
+  }
+  
+  
+  
+{
+  ManagerMainPage=TclForm.Create(self);
+  ManagerMainPage.SetFormColor('#f8edd9','',clGNone);
+  ManagerMainPage.SetFormBGImage('https://resmim.net/cdn/2025/08/13/XQjvaK.png');
+  
+  // KARŞILAMA YAZISI
+    labelwelcome=ManagerMainPage.AddNewProLabel(ManagerMainPage, 'labelwelcome', 'Kolay Gelsin');
+    labelWelcome.align=alTop;
+    labelWelcome.margins.left=20;
+    labelWelcome.margins.top=28;
+    labelWelcome.margins.bottom=20;
+    labelWelcome.width=200;
+    labelWelcome.height=50;
+    labelWelcome.clProSettings.FontHorzAlign = palLeading;
+    labelWelcome.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+    labelWelcome.clProSettings.FontSize=32;
+    labelWelcome.clProSettings.TextSettings.Font.Style=[fsBold]
+    labelWelcome.SetclProSettings(labelWelcome.clProSettings);
+    
+  // BİLDİRİM BUTONU
+    buttonNotification=ManagerMainPage.AddNewProButton(labelWelcome, 'buttonNotification', '');
+    buttonNotification.align=alRight;
+    buttonNotification.margins.Right = 20;
+    buttonNotification.Width=32;
+    buttonNotification.clProSettings.PictureAutoFit = True;
+    buttonNotification.clProSettings.PictureSource = 'https://resmim.net/cdn/2025/08/20/XL8Vg6.png';
+    buttonNotification.SetclProSettings(buttonNotification.clProSettings);
+    ManagerMainPage.AddNewEvent(buttonNotification,tbeOnClick,'GoToManagerNotification');
+    
+  // BİTEN GÖREVLER YAN YAZI 
+    labelCompletedTask=ManagerMainPage.AddNewProLabel(ManagerMainPage,'labelCompletedTask', 'Tamamlanan Görevler');
+    labelCompletedTask.align= alTop;
+    labelCompletedTask.margins.bottom =10;
+    labelCompletedTask.margins.left=10;
+    labelCompletedTask.clProSettings.FontHorzAlign = palLeading;
+    labelCompletedTask.clProSettings.FontSize = 20;
+    labelCompletedTask.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+    labelCompletedTask.SetclProSettings(labelCompletedTask.clProSettings);
+    
+  // BİTEN GÖREVLER LİSTESİ ARKA PLAN 
+  
+    listVCompletedTask=ManagerMainPage.AddNewProListView(ManagerMainPage, 'listVCompletedTask');
+    listVCompletedTask.align = alTop;
+    listVCompletedTask.height= 150;
+    listVCompletedTask.margins.bottom=10;
+    listVCompletedTask.margins.left=10;
+    listVCompletedTask.margins.right=10;
+    listVCompletedTask.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+    listVCompletedTask.clProSettings.BorderColor = clAlphaColor.clHexToColor('#995f1e');
+    listVCompletedTask.clProSettings.BorderWidth = 1;
+    listVCompletedTask.clProSettings.IsRound = True; 
+    listVCompletedTask.clProSettings.ItemWidth = 200;
+    listVCompletedTask.clProSettings.ItemHeight = 20;
+    listVCompletedTask.clProSettings.ColCount = 1;
+    listVCompletedTask.clProSettings.ItemSpace = 10;
+    listVCompletedTask.SetclProSettings(listVCompletedTask.clProSettings);
+    
+  // MALZEME UYARISI YAN YAZI 
+  
+    labelKit=ManagerMainPage.AddNewProLabel(ManagerMainPage,'labelKit', 'Malzeme Stok Uyarısı');
+    labelKit.align= alTop;
+    labelKit.margins.bottom =10;
+    labelKit.margins.left=10;
+    labelKit.clProSettings.FontHorzAlign = palLeading;
+    labelKit.clProSettings.FontSize = 20;
+    labelKit.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+    labelKit.SetclProSettings(labelKit.clProSettings);
+    
+  // MALZEME STOK UYARISI ARKA PLAN 
+  
+    listVKit=ManagerMainPage.AddNewProListView(ManagerMainPage, 'listVKit');
+    listVKit.align = alTop;
+    listVKit.height= 150;
+    listVKit.margins.bottom=10;
+    listVKit.margins.left=10;
+    listVKit.margins.right=10;
+    listVKit.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#dbbe8d');
+    listVKit.clProSettings.BorderColor = clAlphaColor.clHexToColor('#995f1e');
+    listVKit.clProSettings.BorderWidth = 1;
+    listVKit.clProSettings.IsRound = True; 
+    listVKit.clProSettings.ItemWidth = 200;
+    listVKit.clProSettings.ItemHeight = 20;
+    listVKit.clProSettings.ColCount = 1;
+    listVKit.clProSettings.ItemSpace = 10;
+    listVKit.SetclProSettings(listVKit.clProSettings);
+    
+  
+  
+  
+    
+  
+  
+  
+  labelmenuFrame=uAddComponent.addMenu(ManagerMainPage,'labelmenuFrame','');
+  ManagerMainPage.Run;
+}

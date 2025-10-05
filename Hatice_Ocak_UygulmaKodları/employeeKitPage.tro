@@ -1,0 +1,213 @@
+var
+  employeeKitpage: TclForm;
+  titlePanel, headerPanel, listContainer: TclProPanel;
+  pageTitle: TclProLabel;
+  headerMaterial, headerQuantity: TclProButton;
+  
+  // --- 1. SATIR İÇİN GLOBAL DEĞİŞKENLER ---
+  row1, quantityPanel1: TclProPanel;
+  lblMaterial1, btnMinus1, btnPlus1: TclProButton;
+  editQuantity1: TclProEdit;
+  
+  // --- 2. SATIR İÇİN GLOBAL DEĞİŞKENLER ---
+  row2, quantityPanel2: TclProPanel;
+  lblMaterial2, btnMinus2, btnPlus2: TclProButton;
+  editQuantity2: TclProEdit;
+  
+  // --- 3. SATIR İÇİN GLOBAL DEĞİŞKENLER ---
+  row3, quantityPanel3: TclProPanel;
+  lblMaterial3, btnMinus3, btnPlus3: TclProButton;
+  editQuantity3: TclProEdit;
+  
+  // Event için geçici değişkenler
+  senderButton: TclProButton;
+  currentValue: Integer;
+
+// --- EVENT HANDLERS ---
+
+void OnPlusClick;
+{
+  senderButton = TclProButton(employeeKitpage.Clsender);
+  
+  // Hangi butona basıldığını kontrol et ve doğru EditBox'ı değiştir.
+  if (senderButton == btnPlus1)
+  {
+    currentValue = StrToIntDef(editQuantity1.Text, 0);
+    editQuantity1.Text = IntToStr(currentValue + 1);
+  }
+  else if (senderButton == btnPlus2)
+  {
+    currentValue = StrToIntDef(editQuantity2.Text, 0);
+    editQuantity2.Text = IntToStr(currentValue + 1);
+  }
+  else if (senderButton == btnPlus3)
+  {
+    currentValue = StrToIntDef(editQuantity3.Text, 0);
+    editQuantity3.Text = IntToStr(currentValue + 1);
+  }
+}
+
+void OnMinusClick;
+{
+  senderButton = TclProButton(employeeKitpage.Clsender);
+  
+  // Hangi butona basıldığını kontrol et ve doğru EditBox'ı değiştir.
+  if (senderButton == btnMinus1)
+  {
+    currentValue = StrToIntDef(editQuantity1.Text, 0);
+    if (currentValue > 0) { editQuantity1.Text = IntToStr(currentValue - 1); }
+  }
+  else if (senderButton == btnMinus2)
+  {
+    currentValue = StrToIntDef(editQuantity2.Text, 0);
+    if (currentValue > 0) { editQuantity2.Text = IntToStr(currentValue - 1); }
+  }
+  else if (senderButton == btnMinus3)
+  {
+    currentValue = StrToIntDef(editQuantity3.Text, 0);
+    if (currentValue > 0) { editQuantity3.Text = IntToStr(currentValue - 1); }
+  }
+}
+
+
+{
+  // --- ANA SAYFA TASARIMI ---
+  employeeKitpage = TclForm.Create(Self);
+  employeeKitpage.SetFormColor('#f8edd9', '', clGNone);
+  
+  // ... Başlık ve Header panelleri aynı ...
+  titlePanel = employeeKitpage.AddNewProPanel(employeeKitpage, 'titlePanel');
+  titlePanel.Align = alTop;
+  titlePanel.Height = 60;
+  titlePanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#f8edd9');
+  titlePanel.SetclProSettings(titlePanel.clProSettings);
+  pageTitle = employeeKitpage.AddNewProLabel(titlePanel, 'pageTitle', 'Malzeme Listesi');
+  pageTitle.Align = alClient;
+  pageTitle.clProSettings.FontColor = clAlphaColor.clHexToColor('#995f1e');
+  pageTitle.clProSettings.FontSize = 24;
+  pageTitle.clProSettings.FontHorzAlign = palCenter;
+  pageTitle.SetclProSettings(pageTitle.clProSettings);
+  headerPanel = employeeKitpage.AddNewProPanel(employeeKitpage, 'headerPanel');
+  headerPanel.Align = alTop;
+  headerPanel.Height = 40;
+  headerPanel.Margins.Left = 20;
+  headerPanel.Margins.Top = 10;
+  headerPanel.Margins.Right = 20;
+  headerPanel.Margins.Bottom = 0;
+  headerPanel.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#E0E0E0');
+  headerPanel.SetclProSettings(headerPanel.clProSettings);
+  headerMaterial = employeeKitpage.AddNewProButton(headerPanel, 'hMat', '  Malzeme Adı');
+  headerMaterial.Align = alLeft;
+  headerMaterial.Width = 300;
+  headerMaterial.Enabled = False;
+  headerMaterial.clProSettings.FontColor = clAlphaColor.clBlack;
+  headerMaterial.clProSettings.FontHorzAlign = palLeading;
+  headerMaterial.SetclProSettings(headerMaterial.clProSettings);
+  headerQuantity = employeeKitpage.AddNewProButton(headerPanel, 'hQty', 'Kullanım Miktarı');
+  headerQuantity.Align = alRight;
+  headerQuantity.Margins.Right = 20;
+  headerQuantity.Enabled = False;
+  headerQuantity.clProSettings.FontColor = clAlphaColor.clBlack;
+  headerQuantity.SetclProSettings(headerQuantity.clProSettings);
+  listContainer = employeeKitpage.AddNewProPanel(employeeKitpage, 'listContainer');
+  listContainer.Align = alClient;
+  listContainer.Margins.Left = 20;
+  listContainer.Margins.Top = 20;
+  listContainer.Margins.Right = 20;
+  listContainer.Margins.Bottom = 0;
+
+  // --- 1. SATIRIN OLUŞTURULMASI ---
+  row1 = employeeKitpage.AddNewProPanel(listContainer, 'row1');
+  row1.Align = alTop; row1.Height = 60; row1.Margins.Bottom = 5;
+  row1.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FFFFFF');
+  row1.clProSettings.BorderWidth = 1; row1.clProSettings.BorderColor = clAlphaColor.clHexToColor('#E0E0E0');
+  row1.SetclProSettings(row1.clProSettings);
+  
+  lblMaterial1 = employeeKitpage.AddNewProButton(row1, 'lbl1', 'Çekiç');
+  lblMaterial1.Align = alLeft; lblMaterial1.Margins.Left = 8; lblMaterial1.Width = 300; lblMaterial1.Enabled = False;
+  lblMaterial1.clProSettings.FontColor = clAlphaColor.clHexToColor('#333333');
+  lblMaterial1.clProSettings.FontHorzAlign = palLeading;
+  lblMaterial1.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FFFFFF');
+  lblMaterial1.clProSettings.BorderWidth = 0;
+  lblMaterial1.SetclProSettings(lblMaterial1.clProSettings);
+  
+  quantityPanel1 = employeeKitpage.AddNewProPanel(row1, 'pnl1');
+  quantityPanel1.Width = 120; quantityPanel1.Align = alRight;
+  
+  btnMinus1 = employeeKitpage.AddNewProButton(quantityPanel1, 'minus1', '-');
+  btnMinus1.Align = alLeft; btnMinus1.Width = 20; btnMinus1.Margins.Top = 10; btnMinus1.Margins.Bottom = 10; btnMinus1.Margins.Left = 0; btnMinus1.Margins.Right = 5;
+  btnMinus1.SetclProSettings(btnMinus1.clProSettings);
+  employeeKitpage.AddNewEvent(btnMinus1, tbeOnClick, 'OnMinusClick');
+  
+  editQuantity1 = employeeKitpage.AddNewProEdit(quantityPanel1, 'edit1', '0');
+  editQuantity1.Align = alClient; editQuantity1.Margins.Top = 10; editQuantity1.Margins.Bottom = 10;
+  
+  btnPlus1 = employeeKitpage.AddNewProButton(quantityPanel1, 'plus1', '+');
+  btnPlus1.Align = alRight; btnPlus1.Width = 20; btnPlus1.Margins.Top = 10; btnPlus1.Margins.Bottom = 10; btnPlus1.Margins.Right = 20;
+  btnPlus1.SetclProSettings(btnPlus1.clProSettings);
+  employeeKitpage.AddNewEvent(btnPlus1, tbeOnClick, 'OnPlusClick');
+
+  // --- 2. SATIRIN OLUŞTURULMASI ---
+  row2 = employeeKitpage.AddNewProPanel(listContainer, 'row2');
+  row2.Align = alTop; row2.Height = 60; row2.Margins.Bottom = 5;
+  row2.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FFFFFF');
+  row2.clProSettings.BorderWidth = 1; row2.clProSettings.BorderColor = clAlphaColor.clHexToColor('#E0E0E0');
+  row2.SetclProSettings(row2.clProSettings);
+  
+  lblMaterial2 = employeeKitpage.AddNewProButton(row2, 'lbl2', 'Tornavida Seti');
+  lblMaterial2.Align = alLeft; lblMaterial2.Margins.Left = 8; lblMaterial2.Width = 300; lblMaterial2.Enabled = False;
+  lblMaterial2.clProSettings.FontColor = clAlphaColor.clHexToColor('#333333');
+  lblMaterial2.clProSettings.FontHorzAlign = palLeading;
+  lblMaterial2.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FFFFFF');
+  lblMaterial2.clProSettings.BorderWidth = 0;
+  lblMaterial2.SetclProSettings(lblMaterial2.clProSettings);
+  
+  quantityPanel2 = employeeKitpage.AddNewProPanel(row2, 'pnl2');
+  quantityPanel2.Width = 120; quantityPanel2.Align = alRight;
+  
+  btnMinus2 = employeeKitpage.AddNewProButton(quantityPanel2, 'minus2', '-');
+  btnMinus2.Align = alLeft; btnMinus2.Width = 20; btnMinus2.Margins.Top = 10; btnMinus2.Margins.Bottom = 10; btnMinus2.Margins.Left = 0; btnMinus2.Margins.Right = 5;
+  btnMinus2.SetclProSettings(btnMinus2.clProSettings);
+  employeeKitpage.AddNewEvent(btnMinus2, tbeOnClick, 'OnMinusClick');
+  
+  editQuantity2 = employeeKitpage.AddNewProEdit(quantityPanel2, 'edit2', '0');
+  editQuantity2.Align = alClient; editQuantity2.Margins.Top = 10; editQuantity2.Margins.Bottom = 10;
+  
+  btnPlus2 = employeeKitpage.AddNewProButton(quantityPanel2, 'plus2', '+');
+  btnPlus2.Align = alRight; btnPlus2.Width = 20; btnPlus2.Margins.Top = 10; btnPlus2.Margins.Bottom = 10; btnPlus2.Margins.Right = 20;
+  btnPlus2.SetclProSettings(btnPlus2.clProSettings);
+  employeeKitpage.AddNewEvent(btnPlus2, tbeOnClick, 'OnPlusClick');
+
+  // --- 3. SATIRIN OLUŞTURULMASI ---
+  row3 = employeeKitpage.AddNewProPanel(listContainer, 'row3');
+  row3.Align = alTop; row3.Height = 60; row3.Margins.Bottom = 5;
+  row3.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FFFFFF');
+  row3.clProSettings.BorderWidth = 1; row3.clProSettings.BorderColor = clAlphaColor.clHexToColor('#E0E0E0');
+  row3.SetclProSettings(row3.clProSettings);
+  
+  lblMaterial3 = employeeKitpage.AddNewProButton(row3, 'lbl3', '10cm Çelik Vida');
+  lblMaterial3.Align = alLeft; lblMaterial3.Margins.Left = 8; lblMaterial3.Width = 300; lblMaterial3.Enabled = False;
+  lblMaterial3.clProSettings.FontColor = clAlphaColor.clHexToColor('#333333');
+  lblMaterial3.clProSettings.FontHorzAlign = palLeading;
+  lblMaterial3.clProSettings.BackgroundColor = clAlphaColor.clHexToColor('#FFFFFF');
+  lblMaterial3.clProSettings.BorderWidth = 0;
+  lblMaterial3.SetclProSettings(lblMaterial3.clProSettings);
+  
+  quantityPanel3 = employeeKitpage.AddNewProPanel(row3, 'pnl3');
+  quantityPanel3.Width = 120; quantityPanel3.Align = alRight;
+  
+  btnMinus3 = employeeKitpage.AddNewProButton(quantityPanel3, 'minus3', '-');
+  btnMinus3.Align = alLeft; btnMinus3.Width = 20; btnMinus3.Margins.Top = 10; btnMinus3.Margins.Bottom = 10; btnMinus3.Margins.Left = 0; btnMinus3.Margins.Right = 5;
+  btnMinus3.SetclProSettings(btnMinus3.clProSettings);
+  employeeKitpage.AddNewEvent(btnMinus3, tbeOnClick, 'OnMinusClick');
+  
+  editQuantity3 = employeeKitpage.AddNewProEdit(quantityPanel3, 'edit3', '0');
+  editQuantity3.Align = alClient; editQuantity3.Margins.Top = 10; editQuantity3.Margins.Bottom = 10;
+  
+  btnPlus3 = employeeKitpage.AddNewProButton(quantityPanel3, 'plus3', '+');
+  btnPlus3.Align = alRight; btnPlus3.Width = 20; btnPlus3.Margins.Top = 10; btnPlus3.Margins.Bottom = 10; btnPlus3.Margins.Right = 20;
+  btnPlus3.SetclProSettings(btnPlus3.clProSettings);
+  employeeKitpage.AddNewEvent(btnPlus3, tbeOnClick, 'OnPlusClick');
+
+  employeeKitpage.Run;
+}
